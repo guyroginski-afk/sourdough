@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מחשבון לחם מחמצת</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=IBM+Plex+Mono:wght@400;600&family=Heebo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream:#F7EDD8;--wheat:#C8913A;--wheat-light:#F5E4C0;--crust:#7B4A1D;--dark:#251608;
+  --moss:#5A7138;--moss-light:#EBF0E2;--steam:#ECD9BE;--accent:#BD4228;
+  --card:#FFFCF4;--border:#E6D5B2;--text-muted:#9A7E62;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--cream);font-family:'Heebo',sans-serif;color:var(--dark);min-height:100vh;
+  background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23C8913A' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+.tab-nav{position:sticky;top:0;z-index:100;background:var(--dark);display:flex;justify-content:center;padding:0 20px;box-shadow:0 4px 20px rgba(0,0,0,0.3);}
+.tab-btn{padding:18px 32px;font-family:'Heebo',sans-serif;font-size:0.95rem;font-weight:700;color:rgba(247,237,216,0.5);background:none;border:none;cursor:pointer;border-bottom:3px solid transparent;transition:all 0.2s;white-space:nowrap;}
+.tab-btn:hover{color:var(--wheat);}
+.tab-btn.active{color:var(--wheat);border-bottom-color:var(--wheat);}
+.hero{background:linear-gradient(160deg,#1E0E04 0%,#3D1F08 50%,#251608 100%);padding:50px 20px 44px;text-align:center;position:relative;overflow:hidden;}
+.hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:30px;background:var(--cream);clip-path:ellipse(55% 100% at 50% 100%);}
+.hero-glow{position:absolute;width:300px;height:300px;background:radial-gradient(circle,rgba(200,145,58,0.15) 0%,transparent 70%);top:-50px;left:50%;transform:translateX(-50%);}
+.hero-emoji{font-size:3.5rem;display:block;margin-bottom:14px;position:relative;}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,6vw,3.2rem);font-weight:900;color:var(--cream);position:relative;line-height:1.1;}
+.hero h1 em{font-style:italic;color:var(--wheat);}
+.hero p{font-family:'IBM Plex Mono',monospace;font-size:0.72rem;color:rgba(247,237,216,0.45);margin-top:10px;letter-spacing:0.15em;text-transform:uppercase;position:relative;}
+.page{display:none;padding:24px 16px 60px;max-width:700px;margin:0 auto;}
+.page.active{display:block;}
+.card{background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:26px 22px;margin-bottom:18px;}
+.card-title{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--crust);margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.season-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.season-btn{border:2px solid var(--border);border-radius:14px;padding:12px 6px 10px;text-align:center;cursor:pointer;background:white;transition:all 0.18s;}
+.season-btn:hover{border-color:var(--wheat);transform:translateY(-1px);}
+.season-btn.active{border-color:var(--wheat);background:linear-gradient(160deg,#FFF8EB,#FDF2D0);box-shadow:0 4px 14px rgba(200,145,58,0.2);}
+.s-emoji{font-size:1.6rem;display:block;margin-bottom:5px;}
+.s-name{font-size:0.75rem;font-weight:700;color:var(--dark);}
+.s-months{font-size:0.6rem;color:var(--moss);margin-top:2px;font-family:'IBM Plex Mono',monospace;}
+.s-temp{font-size:0.68rem;color:var(--wheat);margin-top:2px;font-family:'IBM Plex Mono',monospace;font-weight:600;}
+.season-btn.active .s-temp{color:var(--crust);}
+.season-info{margin-top:12px;padding:12px 16px;background:var(--moss-light);border-radius:12px;display:flex;gap:20px;flex-wrap:wrap;}
+.si-item{display:flex;flex-direction:column;gap:2px;}
+.si-label{font-size:0.62rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--moss);font-family:'IBM Plex Mono',monospace;}
+.si-value{font-size:0.88rem;font-weight:700;color:var(--dark);}
+
+/* ── INPUT ALIGNMENT FIX ───────────────────────────────────────────────────
+   align-items:end makes all input boxes sit on the same baseline regardless
+   of whether their sibling has a .sub subtitle or not.                    */
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;align-items:end;}
+@media(max-width:480px){.input-row{grid-template-columns:1fr;align-items:stretch;}}
+.input-group{display:flex;flex-direction:column;gap:4px;}
+.input-group label{font-size:0.76rem;font-weight:700;color:var(--crust);}
+/* .sub always rendered — use &nbsp; when empty so height stays consistent */
+.input-group .sub{font-size:0.66rem;color:var(--text-muted);line-height:1.2;min-height:1em;}
+.input-wrap{position:relative;}
+.input-wrap input{width:100%;padding:10px 42px 10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:0.98rem;font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--dark);background:white;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;}
+.input-wrap input:focus{outline:none;border-color:var(--wheat);box-shadow:0 0 0 3px rgba(200,145,58,.12);}
+.input-unit{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-family:'IBM Plex Mono',monospace;font-size:0.65rem;color:var(--wheat);font-weight:600;pointer-events:none;}
+
+/* ── RATIO PRESETS FIX ─────────────────────────────────────────────────────
+   Equal-width buttons that span the full width, labels stay below ticks.  */
+.ratio-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.ratio-row span{font-size:0.76rem;font-weight:700;color:var(--crust);}
+.ratio-badge{font-family:'IBM Plex Mono',monospace;font-size:0.88rem;font-weight:600;color:var(--wheat);background:var(--wheat-light);padding:3px 12px;border-radius:8px;}
+input[type=range]{-webkit-appearance:none;width:100%;height:5px;border-radius:3px;background:var(--border);outline:none;cursor:pointer;margin-bottom:6px;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--wheat);border:3px solid white;box-shadow:0 2px 8px rgba(200,145,58,.45);}
+.presets{display:flex;gap:0;width:100%;}
+.preset-btn{flex:1;padding:7px 2px;border-radius:0;border:1px solid var(--border);border-left:none;font-size:0.72rem;font-family:'IBM Plex Mono',monospace;font-weight:600;cursor:pointer;background:white;color:var(--dark);transition:all .15s;text-align:center;}
+.preset-btn:first-child{border-right:none;border-left:1px solid var(--border);border-radius:10px 0 0 10px;}
+.preset-btn:last-child{border-radius:0 10px 10px 0;}
+.preset-btn:hover{background:var(--wheat-light);color:var(--crust);}
+.preset-btn.active{background:var(--wheat);border-color:var(--wheat);color:white;z-index:1;position:relative;}
+
+.calc-btn{width:100%;margin-top:18px;padding:15px;background:linear-gradient(135deg,var(--crust) 0%,#A05826 100%);color:white;border:none;border-radius:14px;font-family:'Heebo',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;letter-spacing:.03em;transition:all .2s;box-shadow:0 4px 16px rgba(123,74,29,.35);}
+.calc-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(123,74,29,.4);}
+.calc-btn:active{transform:translateY(0);}
+.result-banner{background:linear-gradient(135deg,var(--dark) 0%,#4A2010 100%);border-radius:18px;padding:22px;color:var(--cream);margin-bottom:14px;position:relative;overflow:hidden;}
+.result-banner::before{content:'🧫';position:absolute;font-size:7rem;left:-15px;top:-10px;opacity:.07;}
+.result-banner h3{font-family:'Playfair Display',serif;font-size:1rem;color:var(--wheat);margin-bottom:14px;}
+.nums-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+@media(max-width:440px){.nums-grid{grid-template-columns:repeat(2,1fr);}}
+.num-box{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 8px;text-align:center;}
+.num-box .v{font-family:'IBM Plex Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--wheat);display:block;}
+.num-box .u{font-size:.6rem;color:rgba(247,237,216,.45);font-family:'IBM Plex Mono',monospace;}
+.num-box .l{font-size:.68rem;color:rgba(247,237,216,.65);margin-top:4px;font-weight:600;}
+.timeline-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px;}
+.timeline-card h4{font-family:'Playfair Display',serif;font-size:1rem;color:var(--crust);margin-bottom:16px;}
+.t-step{display:flex;gap:14px;position:relative;}
+.t-step:not(:last-child)::after{content:'';position:absolute;right:15px;top:32px;bottom:-4px;width:2px;background:var(--border);}
+.t-icon{width:30px;height:30px;border-radius:50%;background:var(--steam);border:2px solid var(--wheat);display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;position:relative;z-index:1;margin-bottom:12px;}
+.t-body{flex:1;padding-top:3px;}
+.t-time{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--wheat);font-weight:600;margin-bottom:1px;}
+.t-title{font-size:.82rem;font-weight:700;margin-bottom:2px;}
+.t-desc{font-size:.72rem;color:var(--text-muted);line-height:1.45;}
+.tips-card{background:var(--moss-light);border:1.5px solid rgba(90,113,56,.25);border-radius:14px;padding:18px;}
+.tips-card h4{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--moss);margin-bottom:10px;}
+.tips-card ul{list-style:none;display:flex;flex-direction:column;gap:7px;}
+.tips-card li{font-size:.77rem;color:#445830;display:flex;gap:8px;line-height:1.45;}
+.tips-card li::before{content:'→';color:var(--moss);flex-shrink:0;font-weight:700;}
+.hidden{display:none!important;}
+.anim{animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+/* BREAD TYPES */
+.bread-types-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;}
+@media(min-width:500px){.bread-types-grid{grid-template-columns:repeat(3,1fr);}}
+.bread-type-btn{border:2px solid var(--border);border-radius:14px;padding:14px 10px 12px;text-align:center;cursor:pointer;background:white;transition:all .18s;position:relative;}
+.bread-type-btn:hover{border-color:var(--wheat);transform:translateY(-1px);}
+.bread-type-btn.active{border-color:var(--crust);background:linear-gradient(160deg,#FFF6E8,#FDEFD2);box-shadow:0 4px 16px rgba(123,74,29,.2);}
+.bt-emoji{font-size:1.8rem;display:block;margin-bottom:6px;}
+.bt-name{font-size:.78rem;font-weight:700;color:var(--dark);}
+.bt-desc{font-size:.62rem;color:var(--text-muted);margin-top:3px;line-height:1.3;}
+.bt-hbadge{position:absolute;top:6px;left:7px;font-family:'IBM Plex Mono',monospace;font-size:.55rem;padding:1px 5px;border-radius:5px;background:rgba(200,145,58,.12);color:#C8913A;font-weight:600;}
+
+/* ── BREAD INFO BANNER — BRIGHTER TEXT FIX ────────────────────────────── */
+.bread-info{background:linear-gradient(140deg,#4A1A06 0%,#7A3010 60%,#5C2008 100%);border-radius:14px;padding:18px 20px;color:#FFF8EE;margin-bottom:18px;border:1.5px solid rgba(255,190,80,.25);}
+.bi-main h4{font-family:'Playfair Display',serif;font-size:1.08rem;font-weight:700;margin-bottom:6px;color:#FFE9C0;letter-spacing:.01em;}
+.bi-main p{font-size:.80rem;color:#F0D8A8;line-height:1.6;}
+.bi-badges{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px;}
+.bi-badge{font-family:'IBM Plex Mono',monospace;font-size:.64rem;padding:4px 10px;border-radius:8px;background:rgba(255,210,120,.16);color:#FFD97A;font-weight:700;border:1px solid rgba(255,200,100,.25);letter-spacing:.02em;}
+
+.unit-note{font-size:.72rem;color:#3D5C22;background:#DFF0D0;border:1px solid rgba(90,113,56,.3);padding:10px 14px;border-radius:10px;margin-bottom:12px;line-height:1.5;}
+.bread-result-card{background:var(--card);border:1.5px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:14px;}
+.brc-header{background:var(--dark);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;}
+.brc-header h3{font-family:'Playfair Display',serif;font-size:1rem;color:var(--wheat);}
+.brc-loaves{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:rgba(247,237,216,.5);}
+.ingredient-row{display:flex;align-items:center;padding:13px 20px;border-bottom:1px solid var(--border);transition:background .15s;}
+.ingredient-row:last-child{border-bottom:none;}
+.ingredient-row:hover{background:#FFFAF0;}
+.ing-icon{font-size:1.2rem;width:30px;flex-shrink:0;}
+.ing-name{flex:1;font-size:.85rem;font-weight:700;color:var(--dark);}
+.ing-sub{font-size:.68rem;color:var(--text-muted);margin-top:1px;}
+.ing-amount{font-family:'IBM Plex Mono',monospace;font-size:1.1rem;font-weight:600;color:var(--crust);}
+.ing-unit{font-size:.65rem;color:var(--text-muted);margin-right:2px;font-family:'IBM Plex Mono',monospace;}
+.ing-pct{font-family:'IBM Plex Mono',monospace;font-size:.65rem;color:var(--wheat);background:var(--wheat-light);padding:1px 6px;border-radius:6px;margin-right:10px;}
+.flour-breakdown{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:14px;}
+.flour-breakdown h4{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--crust);margin-bottom:14px;}
+.flour-bar-item{margin-bottom:12px;}
+.flour-bar-label{display:flex;justify-content:space-between;margin-bottom:5px;}
+.flour-bar-label span{font-size:.75rem;font-weight:600;color:var(--dark);}
+.flour-bar-label em{font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--crust);font-weight:600;}
+.flour-bar-track{height:8px;background:var(--border);border-radius:4px;overflow:hidden;}
+.flour-bar-fill{height:100%;border-radius:4px;transition:width .6s ease;}
+.process-tips{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:14px;}
+.process-tips h4{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--crust);margin-bottom:12px;}
+.process-step{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.process-step:last-child{border-bottom:none;}
+.ps-num{width:26px;height:26px;border-radius:50%;background:var(--crust);color:white;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.ps-title{font-size:.8rem;font-weight:700;margin-bottom:2px;}
+.ps-desc{font-size:.72rem;color:var(--text-muted);line-height:1.45;}
+.instructions-card{background:var(--dark);border-radius:20px;overflow:hidden;margin-bottom:14px;}
+.inst-header{padding:20px 22px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.inst-header h4{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--wheat);}
+.inst-toggle{font-size:.7rem;font-family:'IBM Plex Mono',monospace;color:rgba(247,237,216,.4);background:rgba(255,255,255,.07);padding:4px 10px;border-radius:8px;transition:all .2s;}
+.inst-header:hover .inst-toggle{color:var(--wheat);background:rgba(200,145,58,.15);}
+.inst-body{display:none;}
+.inst-body.open{display:block;}
+.inst-phase{border-bottom:1px solid rgba(255,255,255,.06);}
+.inst-phase:last-child{border-bottom:none;}
+.inst-phase-header{padding:14px 22px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;transition:background .15s;}
+.inst-phase-header:hover{background:rgba(255,255,255,.04);}
+.inst-phase-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.inst-phase-title{font-size:.88rem;font-weight:700;color:var(--cream);flex:1;}
+.inst-phase-time{font-family:'IBM Plex Mono',monospace;font-size:.62rem;color:var(--wheat);background:rgba(200,145,58,.15);padding:2px 8px;border-radius:6px;font-weight:600;}
+.inst-phase-chevron{color:rgba(247,237,216,.3);font-size:.7rem;transition:transform .2s;}
+.inst-steps-list{padding:0 22px 16px 64px;display:none;}
+.inst-steps-list.open{display:block;}
+.inst-step-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.inst-step-item:last-child{border-bottom:none;}
+.inst-step-dot{width:6px;height:6px;border-radius:50%;background:var(--wheat);flex-shrink:0;margin-top:6px;}
+.inst-step-text{font-size:.78rem;color:rgba(247,237,216,.85);line-height:1.55;}
+.inst-step-text strong{color:#FFD97A;font-weight:700;}
+.inst-tip{margin:5px 0 0;padding:8px 12px;background:rgba(200,145,58,.1);border-right:3px solid var(--wheat);border-radius:0 6px 6px 0;font-size:.72rem;color:rgba(247,237,216,.65);font-style:italic;line-height:1.45;}
+footer{text-align:center;padding:20px;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--wheat);text-transform:uppercase;opacity:.6;}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-glow"></div>
+  <span class="hero-emoji">🍞</span>
+  <h1>מחשבון לחם <em>מחמצת</em></h1>
+
+</div>
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('starter')">🧫 מחמצת</button>
+  <button class="tab-btn" onclick="showTab('bread')">🍞 מחשבון לחם</button>
+</nav>
+
+<!-- ═══ TAB 1: STARTER ═══ -->
+<div class="page active" id="tab-starter">
+  <div class="card">
+    <div class="card-title">🌡️ עונה בישראל</div>
+    <div class="season-grid">
+      <div class="season-btn" data-s="winter" onclick="setSeason(this)"><span class="s-emoji">🌧️</span><div class="s-name">חורף</div><div class="s-months">דצמ׳–מרץ</div><div class="s-temp">14–19°</div></div>
+      <div class="season-btn active" data-s="spring" onclick="setSeason(this)"><span class="s-emoji">🌸</span><div class="s-name">אביב</div><div class="s-months">מרץ–מאי</div><div class="s-temp">20–26°</div></div>
+      <div class="season-btn" data-s="summer" onclick="setSeason(this)"><span class="s-emoji">☀️</span><div class="s-name">קיץ</div><div class="s-months">יוני–ספט׳</div><div class="s-temp">27–34°</div></div>
+      <div class="season-btn" data-s="autumn" onclick="setSeason(this)"><span class="s-emoji">🍂</span><div class="s-name">סתיו</div><div class="s-months">ספט׳–נוב׳</div><div class="s-temp">20–28°</div></div>
+    </div>
+    <div class="season-info">
+      <div class="si-item"><span class="si-label">זמן תפיחה</span><span class="si-value" id="s-risetime"></span></div>
+      <div class="si-item"><span class="si-label">יחס מומלץ</span><span class="si-value" id="s-recrec"></span></div>
+      <div class="si-item"><span class="si-label">תסיסה נפחית</span><span class="si-value" id="s-bulk"></span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚖️ כמה לחם אתה אופה?</div>
+    <div class="input-row">
+      <div class="input-group">
+        <label>משקל כיכר אחת</label>
+        <div class="sub">לאחר אפייה</div>
+        <div class="input-wrap"><input type="number" id="s-loafwt" value="850" min="300" max="2000"/><span class="input-unit">גר'</span></div>
+      </div>
+      <div class="input-group">
+        <label>מספר כיכרות</label>
+        <div class="sub">&nbsp;</div>
+        <div class="input-wrap"><input type="number" id="s-loafct" value="2" min="1" max="10"/><span class="input-unit">יח'</span></div>
+      </div>
+    </div>
+    <div class="input-row">
+      <div class="input-group">
+        <label>% מחמצת בבצק</label>
+        <div class="sub">בד"כ 15–20%</div>
+        <div class="input-wrap"><input type="number" id="s-pct" value="18" min="5" max="35"/><span class="input-unit">%</span></div>
+      </div>
+      <div class="input-group">
+        <label>לשמור לפעם הבאה</label>
+        <div class="sub">&nbsp;</div>
+        <div class="input-wrap"><input type="number" id="s-keep" value="50" min="20" max="200"/><span class="input-unit">גר'</span></div>
+      </div>
+    </div>
+    <div style="margin-top:8px;">
+      <div class="ratio-row">
+        <span>יחס האכלה (מחמצת:קמח:מים)</span>
+        <span class="ratio-badge" id="s-ratiobadge">1 : 3 : 3</span>
+      </div>
+      <input type="range" id="s-slider" min="1" max="5" value="3" step="1" oninput="updateRatio(this.value)"/>
+      <div class="presets">
+        <button class="preset-btn" data-v="1" onclick="setRatio(1)">1:1:1</button>
+        <button class="preset-btn" data-v="2" onclick="setRatio(2)">1:2:2</button>
+        <button class="preset-btn active" data-v="3" onclick="setRatio(3)">1:3:3</button>
+        <button class="preset-btn" data-v="4" onclick="setRatio(4)">1:4:4</button>
+        <button class="preset-btn" data-v="5" onclick="setRatio(5)">1:5:5</button>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcStarter()">🧮 חשב כמות האכלה</button>
+  </div>
+
+  <div id="starter-results" class="hidden">
+    <div class="result-banner"><h3>📊 תוכנית האכלה מדויקת</h3><div class="nums-grid" id="s-nums"></div></div>
+    <div class="timeline-card"><h4>⏱ לוח זמנים לעונה זו</h4><div id="s-timeline"></div></div>
+    <div class="tips-card"><h4>💡 טיפים לעונה זו בישראל</h4><ul id="s-tips"></ul></div>
+  </div>
+</div>
+
+<!-- ═══ TAB 2: BREAD ═══ -->
+<div class="page" id="tab-bread">
+  <div class="card">
+    <div class="card-title">🍞 בחר סוג לחם</div>
+    <div class="bread-types-grid" id="breadTypesGrid"></div>
+    <div id="breadInfoBanner" class="bread-info hidden"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">⚖️ כמויות</div>
+    <div id="unit-note" class="unit-note hidden"></div>
+    <div class="input-row">
+      <div class="input-group">
+        <label id="count-label">מספר כיכרות</label>
+        <div class="sub">&nbsp;</div>
+        <div class="input-wrap"><input type="number" id="b-loaves" value="2" min="1" max="30"/><span class="input-unit">יח'</span></div>
+      </div>
+      <div class="input-group">
+        <label id="weight-label">משקל כיכר</label>
+        <div class="sub" id="weight-sub">לאחר אפייה</div>
+        <div class="input-wrap"><input type="number" id="b-weight" value="850" min="50" max="2000"/><span class="input-unit">גר'</span></div>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcBread()">🍞 חשב מתכון</button>
+  </div>
+  <div id="bread-results" class="hidden">
+    <div class="bread-result-card">
+      <div class="brc-header"><h3 id="br-title">מתכון לחם</h3><span class="brc-loaves" id="br-sub"></span></div>
+      <div id="br-ingredients"></div>
+    </div>
+    <div class="flour-breakdown"><h4 id="br-flour-title">🌾 קמח</h4><div id="br-flour-bars"></div></div>
+    <div class="process-tips"><h4>📋 סיכום שלבים</h4><div id="br-process-steps"></div></div>
+    <div class="instructions-card">
+      <div class="inst-header" onclick="toggleInstructions()">
+        <h4>📖 הוראות הכנה מלאות</h4>
+        <span class="inst-toggle" id="inst-toggle-label">▼ פתח</span>
+      </div>
+      <div class="inst-body" id="inst-body"><div id="inst-phases"></div></div>
+    </div>
+  </div>
+</div>
+
+<footer>🍞 מחשבון לחם מחמצת</footer>
+
+<script>
+const SEASONS={
+  winter:{riseLow:8,riseHigh:12,bulkLow:5,bulkHigh:7,recRatio:3,tips:['ישראל בחורף: לילות קרים (12–16°), ימים נעימים (18–20°)','שים מחמצת בקומה עמוקה של תנור כבוי עם הנורה — יוצר 24–26°','יחס 1:3:3 מעולה לחורף — מספיק מזון ללא סיכון תמרוס','תסיסה נפחית בשיטת מתיחה וקיפול אחת ל-45 דקות, 4–5 פעמים','אפשר גם קירור לילי במקרר (8–12°) לטעם עמוק יותר']},
+  spring:{riseLow:5,riseHigh:8,bulkLow:3,bulkHigh:5,recRatio:3,tips:['אביב ישראל: הטמפרטורה הכי אידיאלית לאפייה (20–26°)','שים לב — מאי יכול להיות 28°+ ולהאיץ מאוד','יחס 1:3:3 עובד מצוין — שיא פעילות בשעות 5–7','תסיסה נפחית קצרה יחסית — עקוב אחרי הנפח, לא השעון','עונה מעולה לנסות לחמים חדשים — מחמצת יציבה ואמינה']},
+  summer:{riseLow:2.5,riseHigh:4,bulkLow:2,bulkHigh:3,recRatio:5,tips:['קיץ ישראלי קשה — 30–34° בבית זו מציאות אמיתית','יחס 1:5:5 חובה: מאכיל בלילה, מוכן בבוקר','מים קרים מהמקרר בהכנת הבצק — לאזן את חום הסביבה','תסיסה נפחית קצרה מאוד — 2–3 שעות, תבדוק כל שעה','שקול קירור לילי: הכנס בצק בלילה, אפה בבוקר']},
+  autumn:{riseLow:4,riseHigh:7,bulkLow:3,bulkHigh:5,recRatio:4,tips:['סתיו ישראלי: ספטמבר עדיין חם, אוקטובר-נובמבר נעים','שמור על יחס 1:4:4 בספטמבר ועבור ל-1:3:3 באוקטובר','ירידת הטמפרטורות עלולה להפתיע — תעקוב אחרי המחמצת','עונת החגים — תכנן מראש: המחמצת מרגישה שינויים פתאומיים','בחגים? הכן מחמצת יום לפני החג כדי שתהיה בשיא']}
+};
+
+const BT=[
+ {id:'sourdough',emoji:'🇫🇷',name:'לחם חיטה קלאסי',desc:'לחם בסיסי מחמצת',hydration:75,starter:18,salt:2,badge:'75% לחות',unit:'כיכרות',wLabel:'משקל כיכר',wSub:'לאחר אפייה',defCount:2,defWt:850,loss:.82,info:'לחם מחמצת בסיסי עם קראסט פריך. קמח לחם חזק נותן את הגלוטן שצריך.',tags:['קלאסי','מתחילים','הכל שימושי'],flours:[{name:'קמח לחם (800-810)',pct:100,color:'#C8913A'}],
+  process:[{t:'השרייה (אוטוליז) — 30–45 דקות',d:'ערבב קמח + מים בלי מלח ומחמצת, כסה והמתן. הגלוטן מתפתח לבד.'},{t:'הוספת מחמצת ומלח',d:'קפל עד לבצק חלק.'},{t:'תסיסה נפחית — 4–6 שעות',d:'מתיחה וקיפול כל 45 דקות, 4 פעמים.'},{t:'עיצוב ותפיחה',d:'עצב עדין, שים בסל תפיחה, 1–2 שעות בחוץ או לילה במקרר.'},{t:'אפייה — 250°',d:'סיר ברזל יצוק. 20 דקות מכוסה, 20 דקות פתוח.'}],
+  inst:[
+   {ph:'🌊 השרייה (אוטוליז)',tm:'30–45 דקות',cl:'#4A90D9',st:[{t:'ערבב <strong>קמח + מים</strong> בלבד'},{t:'כסה ונוח <strong>30–45 דקות</strong>',tip:'הגלוטן מתפתח לבד — הבצק הופך חלק הרבה יותר בלי לישה.'}]},
+   {ph:'🧫 הוספת מחמצת ומלח',tm:'10 דקות',cl:'#7B9E45',st:[{t:'פזר מחמצת על הבצק, קפל וערבב <strong>3–4 דקות</strong>'},{t:'פזר מלח, הוסף כף מים, קפל <strong>3 דקות</strong>',tip:'מלח מוסיפים בנפרד — לא לפגוע במחמצת.'}]},
+   {ph:'🔬 תסיסה נפחית',tm:'4–6 שעות',cl:'#C8913A',st:[{t:'מתיחה וקיפול: תפוס מצד, מתח, קפל, סובב 90°, חזור 4 פעמים'},{t:'חזור <strong>כל 45 דקות, 4 פעמים</strong>'},{t:'נוח עד שהבצק גדל <strong>50–70%</strong>',tip:'קיץ ישראלי: 3–4 שעות. חורף: 5–6 שעות.'}]},
+   {ph:'✂️ עיצוב',tm:'10 דקות',cl:'#9B6B9E',st:[{t:'עיצוב ראשוני: קפל מהצדדים, הפוך ועגל'},{t:'מנוחת ספסל <strong>20–30 דקות</strong>'},{t:'עיצוב סופי: כדור הדוק לסל תפיחה מקומח',tip:'קמח שיפון על סל התפיחה מונע הידבקות.'}]},
+   {ph:'⏳ תפיחה',tm:'1–2 שעות / לילה',cl:'#6B8E9E',st:[{t:'בחוץ 1–2 שעות — או במקרר <strong>8–14 שעות</strong>',tip:'קירור לילי = טעם עמוק + קל יותר לחרוץ.'},{t:'מבחן לחיצה: חוזר לאט = מוכן'}]},
+   {ph:'🔥 אפייה',tm:'40–45 דקות',cl:'#BD4228',st:[{t:'חמם תנור <strong>250°</strong> עם סיר ברזל יצוק — <strong>60 דקות מראש</strong>'},{t:'הפוך, חרוץ בזווית 30°',tip:'חריצה בטוחה = תנועה אחת מהירה.'},{t:'<strong>20 דקות</strong> מכוסה, <strong>230°</strong>, עוד <strong>20–25 דקות</strong> פתוח'},{t:'צנן על רשת <strong>שעה לפחות</strong>',tip:'לחם שנחתך חם יהיה גבהתי בפנים!'}]}
+  ]},
+ {id:'spelt',emoji:'🌾',name:'לחם כוסמין',desc:'100% קמח כוסמין',hydration:72,starter:20,salt:2,badge:'72% לחות',unit:'כיכרות',wLabel:'משקל כיכר',wSub:'לאחר אפייה',defCount:2,defWt:800,loss:.82,info:'כוסמין עתיר חלבון וטעם אגוזי. גלוטן שונה — נקרע בקלות, מטפל בעדינות.',tags:['בריא','טעים','עדין'],flours:[{name:'קמח כוסמין מלא',pct:70,color:'#8B6914'},{name:'קמח כוסמין לבן',pct:30,color:'#D4A830'}],
+  process:[{t:'השרייה קצרה — 20 דקות',d:'כוסמין לא צריך השרייה ארוכה — הגלוטן יינזק.'},{t:'לישה עדינה בלבד',d:'מתיחה וקיפול בלי להפעיל כוח.'},{t:'תסיסה נפחית קצרה',d:'בקיץ — 2.5 שעות. בחורף — עד 4 שעות.'},{t:'עיצוב עדין',d:'עיצוב קל עם הרבה קמח.'},{t:'אפייה — 230°',d:'סיר ברזל יצוק. 22 דקות מכוסה, 18 דקות פתוח.'}],
+  inst:[
+   {ph:'🌊 השרייה קצרה',tm:'20 דקות',cl:'#8B6914',st:[{t:'ערבב קמח כוסמין עם <strong>90%</strong> מהמים'},{t:'נוח <strong>20 דקות בלבד</strong>',tip:'השרייה ארוכה מחלישה את גלוטן הכוסמין השברירי.'}]},
+   {ph:'🔬 תסיסה נפחית קצרה',tm:'3–4 שעות',cl:'#7B9E45',st:[{t:'מתיחה וקיפול <strong>עדין</strong>, 3 פעמים'},{t:'בקיץ ישראלי: מוכן תוך <strong>2.5–3 שעות</strong>',tip:'כוסמין מוכן מהר — בדוק מוקדם!'}]},
+   {ph:'🔥 אפייה — 230°',tm:'40 דקות',cl:'#BD4228',st:[{t:'חמם <strong>230°</strong> (לא 250°!) עם סיר ברזל יצוק'},{t:'<strong>22 דקות</strong> מכוסה, <strong>18 דקות</strong> פתוח'},{t:'צבע זהוב-חום, לא כהה',tip:'כוסמין נשרף מהר — שמור עין!'}]}
+  ]},
+ {id:'country',emoji:'🏡',name:'לחם כפרי',desc:'חיטה + שיפון',hydration:78,starter:20,salt:2,badge:'78% לחות',unit:'כיכרות',wLabel:'משקל כיכר',wSub:'לאחר אפייה',defCount:2,defWt:850,loss:.82,info:'שיפון מוסיף חמיצות, טעם עמוק, וקראסט נפלא. לחם עם אופי אמיתי.',tags:['חמצמץ','עשיר','אופי'],flours:[{name:'קמח לחם',pct:80,color:'#C8913A'},{name:'קמח שיפון',pct:20,color:'#7B5E30'}],
+  process:[{t:'ערבב שיפון עם מים תחילה',d:'שיפון סופח מים מהר — ערבב קודם עם חלק מהמים.'},{t:'בצק דביק — נורמלי!',d:'78% לחות + שיפון = בצק דביק מאוד. ידיים רטובות.'},{t:'תסיסה נפחית — 4–5 שעות',d:'מתיחה וקיפול כל 45 דקות, 4 פעמים.'},{t:'סל תפיחה עם קמח שיפון',d:'קמח שיפון נדיב על סל התפיחה.'},{t:'אפייה — 250°',d:'סיר ברזל יצוק. 20 דקות מכוסה, 25 דקות פתוח.'}],
+  inst:[
+   {ph:'🌊 ערבוב והשרייה',tm:'45 דקות',cl:'#7B5E30',st:[{t:'ערבב קמח שיפון עם <strong>70%</strong> מהמים קודם'},{t:'הוסף קמח לחם + שאר המים, נוח <strong>30 דקות</strong>'}]},
+   {ph:'🔬 תסיסה נפחית',tm:'4–5 שעות',cl:'#7B9E45',st:[{t:'מתיחה וקיפול כל 45 דקות, <strong>4 פעמים</strong>'},{t:'ידיים רטובות תמיד!',tip:'78% לחות = בצק דביק. זה רצוי.'}]},
+   {ph:'🔥 אפייה — 250°',tm:'45 דקות',cl:'#BD4228',st:[{t:'חמם <strong>250°</strong> עם סיר ברזל יצוק'},{t:'<strong>20 דקות</strong> מכוסה'},{t:'<strong>25 דקות</strong> פתוח — קראסט כהה מאוד = מושלם!'}]}
+  ]},
+ {id:'baguette',emoji:'🥖',name:'באגט',desc:'קמח לבן, לחות נמוכה',hydration:68,starter:15,salt:2,badge:'68% לחות',unit:'באגטים',wLabel:'משקל באגט',wSub:'לאחר אפייה',defCount:3,defWt:280,loss:.85,info:'באגט מחמצת: קראסט דק ופריך, פנים קל ואוורירי. גלוטן חזק הכרחי.',tags:['צרפתי','פריך','מסורתי'],flours:[{name:'קמח T65 / 550',pct:100,color:'#E8C478'}],
+  process:[{t:'לישה אינטנסיבית',d:'לוש 10–15 דקות עד לבצק חלק גמישי.'},{t:'תסיסה + קירור לילי',d:'תסיסה 2–3 שעות, אח"כ מקרר 12–24 שעות.'},{t:'עיצוב באגט',d:'גלגל לצינורות ~40 ס"מ. תפיחה 1.5–2 שעות.'},{t:'חרצות',d:'חרץ בזווית 30° — חרצות עמוקות = אוזניים יפות.'},{t:'אפייה עם קיטור — 250°',d:'כוס מים רותחים בתחתית. 18–22 דקות.'}],
+  inst:[
+   {ph:'🌊 לישה',tm:'15 דקות',cl:'#E8C478',st:[{t:'ערבב קמח + מים + מחמצת, נוח <strong>20 דקות</strong>'},{t:'הוסף מלח, לוש <strong>10–15 דקות</strong>',tip:'מבחן חלון: מתח פיסת בצק — צריכה להיות שקופה.'}]},
+   {ph:'🔬 תסיסה + קירור לילי',tm:'14–26 שעות',cl:'#4A90D9',st:[{t:'מתיחה וקיפול כל 30 דקות, 3 פעמים'},{t:'נוח 2–3 שעות, אח"כ <strong>מקרר 12–24 שעות</strong>',tip:'קירור לילי = טעם עמוק + קל יותר לעצב.'}]},
+   {ph:'✂️ עיצוב',tm:'15 דקות',cl:'#C8913A',st:[{t:'עיצוב ראשוני: גליל, מנוחת ספסל <strong>20 דקות</strong>'},{t:'גלגל לצינור <strong>35–40 ס"מ</strong>',tip:'התפר למטה — הבאגט לא ייפתח.'}]},
+   {ph:'🔥 אפייה עם קיטור',tm:'20–22 דקות',cl:'#BD4228',st:[{t:'חמם <strong>250°</strong> עם אבן פיצה — <strong>60 דקות מראש!</strong>'},{t:'חרץ 3–5 חרצות בזווית 30°'},{t:'שפוך <strong>כוס מים רותחים</strong> לתבנית ברזל בתחתית',tip:'קיטור = קראסט פריך ואוזניים. חובה!'},{t:'<strong>18–22 דקות</strong> עד זהוב-חום'}]}
+  ]},
+ {id:'whole',emoji:'🌑',name:'חיטה מלאה',desc:'100% קמח מלא',hydration:80,starter:22,salt:2.2,badge:'80% לחות',unit:'כיכרות',wLabel:'משקל כיכר',wSub:'לאחר אפייה',defCount:2,defWt:800,loss:.82,info:'חיטה מלאה: סיבים, ויטמינים, טעם אדמתי עמוק.',tags:['בריאות','סיבים','עמוק'],flours:[{name:'קמח חיטה מלאה',pct:100,color:'#6B5020'}],
+  process:[{t:'השרייה ארוכה — 1–2 שעות',d:'קמח מלא סופח הרבה מים — השרייה ארוכה חיונית.'},{t:'מחמצת בשיא הפעילות',d:'קמח מלא דורש מחמצת בשיא בלבד.'},{t:'תסיסה נפחית ארוכה',d:'5–7 שעות בחורף. מתיחה וקיפול.'},{t:'עיצוב מהיר',d:'הגלוטן פחות חזק — עיצוב מהיר ועדין.'},{t:'אפייה — 250°',d:'25 דקות מכוסה, 20 דקות פתוח. צבע כהה — תקין!'}],
+  inst:[
+   {ph:'🌊 השרייה ארוכה',tm:'1–2 שעות',cl:'#6B5020',st:[{t:'ערבב קמח מלא + כל המים'},{t:'נוח <strong>1–2 שעות</strong>',tip:'הסובין חותך גלוטן — השרייה ארוכה הכרחית.'}]},
+   {ph:'🔬 תסיסה נפחית ארוכה',tm:'5–7 שעות',cl:'#7B9E45',st:[{t:'<strong>מחמצת בשיא הפעילות</strong> — קריטי!',tip:'קמח מלא עם מחמצת חלשה = לחם שטוח.'},{t:'מתיחה וקיפול כל 45 דקות, 4 פעמים'}]},
+   {ph:'🔥 אפייה',tm:'45 דקות',cl:'#BD4228',st:[{t:'חמם <strong>250°</strong> עם סיר ברזל יצוק'},{t:'<strong>25 דקות</strong> מכוסה, <strong>20 דקות</strong> פתוח'},{t:'קראסט כהה מאוד = תקין!',tip:'בדוק טמפרטורה פנימית: 96°.'},{t:'צנן <strong>שעה וחצי</strong>'}]}
+  ]},
+ {id:'rye',emoji:'🖤',name:'לחם שיפון',desc:'שיפון כהה וחמוץ',hydration:85,starter:25,salt:2,badge:'85% לחות',unit:'כיכרות',wLabel:'משקל כיכר',wSub:'לאחר אפייה',defCount:1,defWt:800,loss:.80,info:'לחם שיפון כהה וחמוץ. ללא גלוטן חזק — לא מעצבים, יוצקים לתבנית.',tags:['סקנדינבי','חמוץ','כבד'],flours:[{name:'קמח שיפון מלא',pct:70,color:'#3D2810'},{name:'קמח חיטה לחם',pct:30,color:'#C8913A'}],
+  process:[{t:'שיפון = בצק דביק',d:'שיפון ייראה כמו בלילה עבה. זה נורמלי.'},{t:'מחמצת שיפון מומלצת',d:'מומלץ להאכיל עם קמח שיפון יום לפני.'},{t:'לא מעצבים — יוצקים',d:'יוצקים לתבנית לחם משומנת.'},{t:'תפיחה — 2–3 שעות',d:'עד שמתחיל להיסדק.'},{t:'אפייה איטית — 190°',d:'190°, 65–75 דקות. לא לפתוח לפני 55 דקות!'}],
+  inst:[
+   {ph:'🌊 ערבוב',tm:'20 דקות',cl:'#3D2810',st:[{t:'ערבב הכל: שיפון, חיטה, מחמצת, מלח, מים'},{t:'ערבב 3–4 דקות — <strong>לא לוש!</strong>',tip:'הבצק יהיה דביק מאוד — נורמלי לחלוטין.'}]},
+   {ph:'🍞 יציקה לתבנית',tm:'10 דקות',cl:'#C8913A',st:[{t:'שמן תבנית לחם היטב'},{t:'יוצקים (לא מעצבים!) לתוך התבנית'},{t:'מפזרים זרעים מלמעלה',tip:'הזרעים מוסיפים טעם ומונעים הדבקות.'}]},
+   {ph:'⏳ תפיחה',tm:'2–3 שעות',cl:'#9B6B9E',st:[{t:'כסה ונח 2–3 שעות'},{t:'מוכן כשסדקים קטנים מופיעים על הפנים',tip:'אל תחכה לסדקים גדולים — אפה עכשיו!'}]},
+   {ph:'🔥 אפייה איטית',tm:'65–75 דקות',cl:'#BD4228',st:[{t:'חמם תנור <strong>190°</strong> (לא גבוה!)'},{t:'שים תבנית מים בתחתית לקיטור'},{t:'<strong>לא לפתוח לפני 55 דקות!</strong>',tip:'טמפרטורה פנימית: 96–98°'},{t:'צנן <strong>שעה שלמה</strong> לפני חיתוך'}]}
+  ]},
+ {id:'spelt_pita',emoji:'🫓',name:'פיתה כוסמין',desc:'רכה, אווירית, בריאה',hydration:62,starter:15,salt:2,badge:'62% לחות',unit:'פיתות',wLabel:'משקל פיתה',wSub:'כ-70–80ג׳ לאחר אפייה',defCount:8,defWt:75,loss:.90,unitNote:'💡 לפיתה: מחשב עבור פיתות בודדות. כל פיתה = כדור בצק של 80–90 גרם לפני אפייה.',info:'פיתה כוסמין מחמצת: בועה אווירית, טעם אגוזי עדין, בריאה יותר מפיתה רגילה.',tags:['ישראלי','בריא','מהיר'],flours:[{name:'קמח כוסמין לבן',pct:80,color:'#D4A830'},{name:'קמח כוסמין מלא',pct:20,color:'#8B6914'}],
+  process:[{t:'בצק קצת קשיח — בכוונה',d:'62% לחות גורמת לפיתה לנפח ולהיות עם כיס.'},{t:'לישה 6–8 דקות',d:'עד לבצק חלק וגמיש. לא קשה ולא דביק.'},{t:'עיצוב: כדורים של 80–90ג׳',d:'מרדד דק — 3–4 מ"מ בלבד!'},{t:'תפיחה קצרה — 15–20 דקות',d:'פיתה לא צריכה תפיחה ארוכה.'},{t:'אפייה לוהטת — 270°+',d:'תנור/מחבת. 2–3 דקות — תתנפח!'}],
+  inst:[
+   {ph:'🌊 הכנת הבצק',tm:'15 דקות',cl:'#D4A830',st:[{t:'ערבב קמח כוסמין + מים + מחמצת + מלח'},{t:'לוש <strong>6–8 דקות</strong>',tip:'כוסמין נלוש פחות מחיטה — אל תגזים.'},{t:'הבצק: <strong>חלק, גמיש, לא דביק</strong>'}]},
+   {ph:'🔬 תסיסה נפחית',tm:'3–5 שעות',cl:'#7B9E45',st:[{t:'מתיחה וקיפול כל שעה, 3 פעמים'},{t:'גדל 50% ואוורירי = מוכן'}]},
+   {ph:'✂️ עיצוב פיתות',tm:'15 דקות',cl:'#C8913A',st:[{t:'חלק לכדורים של <strong>80–90ג׳ כל אחד</strong>'},{t:'מנוחת ספסל 15 דקות'},{t:'מרדד עיגול <strong>3–4 מ"מ דק בלבד!</strong>',tip:'פיתה דקה = כיס גדול. עבה = לא תתנפח!'},{t:'נוח <strong>15–20 דקות</strong> על נייר אפייה'}]},
+   {ph:'🔥 אפייה לוהטת',tm:'3 דקות לפיתה',cl:'#BD4228',st:[{t:'חמם תנור <strong>270°+</strong> עם אבן פיצה — 30 דקות מראש'},{t:'<strong>מחבת ברזל יצוק</strong>: חלופה מעולה, להבה מקסימלית'},{t:'<strong>2–3 דקות</strong> — הפיתה תתנפח כמו בלון!',tip:'כשמתנפחת לגמרי — מוכן!'},{t:'עטוף מייד במגבת — שומר על הרכות'},{t:'לא התנפחה? תנור לא חם מספיק / פיתה עבה מדי'}]}
+  ]},
+ {id:'challah',emoji:'✡️',name:'חלה',desc:'רכה, עשירה, שבת',hydration:58,starter:18,salt:2,badge:'58% לחות',unit:'חלות',wLabel:'משקל חלה',wSub:'לאחר אפייה',defCount:2,defWt:700,loss:.85,extras:[{icon:'🥚',name:'ביצים',pct:12},{icon:'🫒',name:'שמן זית',pct:8},{icon:'🍯',name:'דבש',pct:5}],info:'חלה מחמצת: עשירה בביצים ושמן, רכה ואווירית. טעם מחמצת עמוק.',tags:['שבת','חגים','עשיר'],flours:[{name:'קמח לחם / 550',pct:100,color:'#E8C87A'}],
+  process:[{t:'לישה ארוכה — 12–15 דקות',d:'חלה צריכה גלוטן חזק לסבול את הביצים והשמן.'},{t:'שמן בסוף הלישה',d:'הכנס שמן לאחר שהגלוטן פותח.'},{t:'תסיסה נפחית — 4–6 שעות',d:'מתיחה וקיפול כל שעה, 3–4 פעמים.'},{t:'קליעת 3 או 6 קווצות',d:'קלעי ונוחי 90 דקות.'},{t:'ציפוי ואפייה — 185°',d:'ביצה טרופה + מים. 30–35 דקות עד זהוב מבריק.'}],
+  inst:[
+   {ph:'🌊 לישה',tm:'25 דקות',cl:'#E8C87A',st:[{t:'ערבב קמח, מחמצת, ביצים, דבש, מים'},{t:'לוש 5 דקות, הוסף מלח, לוש 3 דקות'},{t:'הוסף שמן <strong>לאט לאט</strong> תוך לישה — 5–7 דקות',tip:'שמן שנכנס לאט נטמע בגלוטן בלי לשבור אותו.'},{t:'מוכן: <strong>חלק, מבריק, לא דביק</strong>'}]},
+   {ph:'🔬 תסיסה נפחית',tm:'4–6 שעות',cl:'#7B9E45',st:[{t:'מתיחה וקיפול כל שעה, 3–4 פעמים'},{t:'גדל 70–80% = מוכן',tip:'תסיסה ארוכה = טעם עמוק יותר.'}]},
+   {ph:'✂️ קליעה',tm:'20 דקות',cl:'#C8913A',st:[{t:'חלק לכדורים (3 או 6)'},{t:'גלגל כל כדור ל"נקניק" — <strong>35–40 ס"מ</strong>'},{t:'קלע! הדק קצוות היטב',tip:'לאחר קליעה — הצמד קצוות שלא ייפתחו.'}]},
+   {ph:'⏳ תפיחה',tm:'90–120 דקות',cl:'#9B6B9E',st:[{t:'כסה ונוח <strong>90–120 דקות</strong>'},{t:'מבחן לחיצה: חוזר לאט = מוכן',tip:'אפשר גם לילה במקרר ולאפות בבוקר!'}]},
+   {ph:'🔥 אפייה',tm:'30–35 דקות',cl:'#BD4228',st:[{t:'חמם <strong>185°</strong>'},{t:'ציפוי: <strong>ביצה טרופה + כף מים</strong>'},{t:'<strong>30–35 דקות</strong> עד זהוב-מבריק',tip:'מתכהה מהר? כסה בנייר אחרי 20 דקות.'},{t:'צנן <strong>20 דקות</strong>'}]}
+  ]},
+ {id:'focaccia',emoji:'🟨',name:"פוקאצ'ה",desc:'שמנמנה, גבהתית, איטלקית',hydration:85,starter:15,salt:2.5,badge:'85% לחות',unit:'תבניות',wLabel:'גרם בצק לתבנית',wSub:'תבנית 30×40 = כ-900 גרם',defCount:1,defWt:900,loss:.88,extras:[{icon:'🫒',name:'שמן זית',pct:15}],unitNote:"💡 לפוקאצ'ה: הכמות היא לתבניות שלמות. תבנית 30×40 ס\"מ ≈ 800–1000 גרם בצק.",info:"פוקאצ'ה מחמצת: בועות ענק, שמן זית בכל מקום, קראסט פריך ופנים ספוגי.",tags:['איטלקי','שמן זית','קל'],flours:[{name:'קמח לבן / 550',pct:100,color:'#F0D060'}],
+  process:[{t:'בצק דביק — לא לוש',d:'85% לחות = דביק. ידיים רטובות תמיד.'},{t:'קיפול סלילי כל 30 דקות',d:'4 פעמים במקום לישה.'},{t:'שמן זית נדיב בתבנית',d:'הבצק שוחה בשמן זית.'},{t:'שקעים עמוקים!',d:'האצבעות מנקבות עמוק לכל הבצק.'},{t:'אפייה — 220°',d:'25–30 דקות. שמן זית גולמי מיד אחרי.'}],
+  inst:[
+   {ph:'🌊 ערבוב והשרייה',tm:'45 דקות',cl:'#F0D060',st:[{t:'ערבב קמח עם <strong>90%</strong> מהמים, נוח <strong>30 דקות</strong>'},{t:'הוסף מחמצת, מלח + שאר מים, ערבב',tip:'הבצק יהיה דביק מאוד — לא לוש ולא מוסיף קמח!'}]},
+   {ph:'🔬 תסיסה + קיפול סלילי',tm:'4–5 שעות',cl:'#7B9E45',st:[{t:'קיפול סלילי: הרם מהמרכז, תן ליפול על עצמו, סובב 90°, חזור 4 פעמים'},{t:'חזור <strong>כל 30 דקות, 4 פעמים</strong>'},{t:'נוח עד מלא אוויר ובועות'}]},
+   {ph:'🫒 יציקה ושקעים',tm:'70 דקות',cl:'#C8913A',st:[{t:'<strong>4–5 כפות שמן זית</strong> לתבנית'},{t:'יצוק את הבצק — אל תמתח!'},{t:'נוח <strong>45–60 דקות</strong>'},{t:'הוסף שמן זית על הפנים'},{t:'<strong>שקעים!</strong> אצבעות עמוק לכל שטח',tip:"שקעים עמוקים = פוקאצ'ה טובה. אל תתבייש!"}]},
+   {ph:'🧄 תוספות',tm:'5 דקות',cl:'#9B6B9E',st:[{t:'מלח גס + רוזמרין טרי = קלאסיק'},{t:'עגבניות שרי חצויות'},{t:'זיתים + בצל אדום',tip:"כל מה שאוהבים על פיצה — מתאים לפוקאצ'ה."}]},
+   {ph:'🔥 אפייה',tm:'25–30 דקות',cl:'#BD4228',st:[{t:'חמם <strong>220°</strong>'},{t:'<strong>25–30 דקות</strong> עד זהוב-כהה',tip:'הרם בסכין — תחתית זהובה = מוכן.'},{t:'מיד: <strong>שמן זית גולמי נוסף!</strong>'},{t:'צנן 15 דקות, חתוך לריבועים'}]}
+  ]}
+];
+
+let currentSeason='spring',currentRatio=3,selectedBread=null;
+
+function init(){
+  document.getElementById('breadTypesGrid').innerHTML=BT.map(bt=>`
+    <div class="bread-type-btn" data-id="${bt.id}" onclick="selectBread('${bt.id}')">
+      <span class="bt-hbadge">${bt.badge}</span>
+      <span class="bt-emoji">${bt.emoji}</span>
+      <div class="bt-name">${bt.name}</div>
+      <div class="bt-desc">${bt.desc}</div>
+    </div>`).join('');
+  updateSeasonUI();
+}
+function showTab(tab){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&tab==='starter')||(i===1&&tab==='bread')));
+  document.getElementById('tab-starter').classList.toggle('active',tab==='starter');
+  document.getElementById('tab-bread').classList.toggle('active',tab==='bread');
+}
+function setSeason(el){
+  document.querySelectorAll('.season-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');currentSeason=el.dataset.s;
+  updateSeasonUI();setRatio(SEASONS[currentSeason].recRatio);
+}
+function updateSeasonUI(){
+  const s=SEASONS[currentSeason];
+  document.getElementById('s-risetime').textContent=`${s.riseLow}–${s.riseHigh} שעות`;
+  document.getElementById('s-recrec').textContent=`1:${s.recRatio}:${s.recRatio}`;
+  document.getElementById('s-bulk').textContent=`${s.bulkLow}–${s.bulkHigh} שעות`;
+}
+function updateRatio(val){
+  currentRatio=parseInt(val);
+  document.getElementById('s-ratiobadge').textContent=`1 : ${val} : ${val}`;
+  document.getElementById('s-slider').value=val;
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.v)===currentRatio));
+}
+function setRatio(val){updateRatio(val);}
+function calcStarter(){
+  const lw=parseFloat(document.getElementById('s-loafwt').value)||850;
+  const lc=parseInt(document.getElementById('s-loafct').value)||2;
+  const pct=parseFloat(document.getElementById('s-pct').value)/100||.18;
+  const keep=parseFloat(document.getElementById('s-keep').value)||50;
+  const r=currentRatio,s=SEASONS[currentSeason];
+  const forBaking=(lw/.82)*lc*pct,total=forBaking+keep;
+  const old=total/(1+2*r),flour=old*r,water=old*r;
+  document.getElementById('s-nums').innerHTML=`
+    <div class="num-box"><span class="v">${Math.round(old)}</span><span class="u">גר'</span><span class="l">מחמצת קיימת</span></div>
+    <div class="num-box"><span class="v">${Math.round(flour)}</span><span class="u">גר'</span><span class="l">קמח להוסיף</span></div>
+    <div class="num-box"><span class="v">${Math.round(water)}</span><span class="u">גר'</span><span class="l">מים להוסיף</span></div>
+    <div class="num-box"><span class="v">${Math.round(total)}</span><span class="u">גר'</span><span class="l">סה"כ אחרי האכלה</span></div>
+    <div class="num-box"><span class="v">${Math.round(forBaking)}</span><span class="u">גר'</span><span class="l">לאפייה (${lc} יח')</span></div>
+    <div class="num-box"><span class="v">${Math.round(keep)}</span><span class="u">גר'</span><span class="l">נשאר לפעם הבאה</span></div>`;
+  document.getElementById('s-timeline').innerHTML=[
+    {e:'🥄',time:'עכשיו',t:'האכלה',d:`שקול ${Math.round(old)}ג׳ מחמצת. הוסף ${Math.round(flour)}ג׳ קמח + ${Math.round(water)}ג׳ מים. ערבב היטב.`},
+    {e:'👁',time:`כ-${s.riseLow} שעות`,t:'בדיקה ראשונה',d:'מחפשים בועות ועלייה ראשונה.'},
+    {e:'📈',time:`${s.riseLow}–${s.riseHigh} שעות`,t:'שיא פעילות!',d:'הוכפלה, בועות בכל צד. עכשיו הזמן הכי טוב.'},
+    {e:'🍞',time:`בתוך ${s.riseHigh} שעות`,t:'קח לאפייה',d:`שאב ${Math.round(forBaking)}ג׳ לבצק הלחם.`},
+    {e:'🧊',time:'לאחר האפייה',t:'שמור לפעם הבאה',d:`השאר ${Math.round(keep)}ג׳ בצנצנת.`}
+  ].map(st=>`<div class="t-step"><div class="t-icon">${st.e}</div>
+    <div class="t-body"><div class="t-time">${st.time}</div><div class="t-title">${st.t}</div><div class="t-desc">${st.d}</div></div></div>`).join('');
+  document.getElementById('s-tips').innerHTML=s.tips.map(t=>`<li>${t}</li>`).join('');
+  const res=document.getElementById('starter-results');
+  res.classList.remove('hidden');res.classList.add('anim');
+  setTimeout(()=>res.scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+function selectBread(id){
+  selectedBread=BT.find(b=>b.id===id);
+  document.querySelectorAll('.bread-type-btn').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+  const banner=document.getElementById('breadInfoBanner');
+  banner.classList.remove('hidden');
+  banner.innerHTML=`<div class="bi-main">
+    <h4>${selectedBread.emoji} ${selectedBread.name}</h4>
+    <p>${selectedBread.info}</p>
+    <div class="bi-badges">
+      <span class="bi-badge">💧 ${selectedBread.hydration}% לחות</span>
+      <span class="bi-badge">🧫 ${selectedBread.starter}% מחמצת</span>
+      <span class="bi-badge">🧂 ${selectedBread.salt}% מלח</span>
+      ${(selectedBread.extras||[]).map(e=>`<span class="bi-badge">${e.icon} ${e.name} ${e.pct}%</span>`).join('')}
+      ${selectedBread.tags.map(t=>`<span class="bi-badge">${t}</span>`).join('')}
+    </div></div>`;
+  document.getElementById('count-label').textContent=`מספר ${selectedBread.unit}`;
+  document.getElementById('weight-label').textContent=selectedBread.wLabel;
+  document.getElementById('weight-sub').textContent=selectedBread.wSub;
+  document.getElementById('b-loaves').value=selectedBread.defCount;
+  document.getElementById('b-weight').value=selectedBread.defWt;
+  const note=document.getElementById('unit-note');
+  selectedBread.unitNote?(note.textContent=selectedBread.unitNote,note.classList.remove('hidden')):note.classList.add('hidden');
+  document.getElementById('bread-results').classList.add('hidden');
+}
+function calcBread(){
+  if(!selectedBread){alert('בחר סוג לחם קודם!');return;}
+  const count=parseInt(document.getElementById('b-loaves').value)||selectedBread.defCount;
+  const wt=parseFloat(document.getElementById('b-weight').value)||selectedBread.defWt;
+  const bt=selectedBread,td=(wt/bt.loss)*count;
+  const sp=bt.starter/100,wp=bt.hydration/100,saltp=bt.salt/100;
+  const F=td/(1+wp+sp+saltp),S=F*sp,W=F*wp,SALT=F*saltp;
+  document.getElementById('br-title').textContent=`${bt.emoji} ${bt.name}`;
+  document.getElementById('br-sub').textContent=`${count} ${bt.unit} × ${wt}ג׳`;
+  document.getElementById('br-ingredients').innerHTML=[
+    {icon:'🌾',name:'קמח סה"כ',sub:bt.flours.map(f=>f.name).join(' + '),g:F,pct:100},
+    {icon:'🧫',name:'מחמצת',sub:'בשיא הפעילות',g:S,pct:bt.starter},
+    {icon:'💧',name:'מים',sub:'טמפרטורת חדר',g:W,pct:bt.hydration},
+    {icon:'🧂',name:'מלח',sub:'ים / קושר',g:SALT,pct:bt.salt},
+    ...(bt.extras||[]).map(e=>({icon:e.icon,name:e.name,sub:'',g:F*(e.pct/100),pct:e.pct}))
+  ].map(ing=>`<div class="ingredient-row">
+    <span class="ing-icon">${ing.icon}</span>
+    <div style="flex:1"><div class="ing-name">${ing.name}</div><div class="ing-sub">${ing.sub}</div></div>
+    <span class="ing-pct">${ing.pct}%</span>
+    <div style="text-align:left"><span class="ing-unit">גר'</span><span class="ing-amount">${Math.round(ing.g)}</span></div>
+  </div>`).join('');
+  document.getElementById('br-flour-title').textContent=bt.flours.length>1?'🌾 פירוט קמחים':'🌾 קמח';
+  document.getElementById('br-flour-bars').innerHTML=bt.flours.map(f=>`
+    <div class="flour-bar-item">
+      <div class="flour-bar-label"><span>${f.name}</span><em>${Math.round(F*(f.pct/100))}ג'</em></div>
+      <div class="flour-bar-track"><div class="flour-bar-fill" style="width:${f.pct}%;background:${f.color}"></div></div>
+    </div>`).join('');
+  document.getElementById('br-process-steps').innerHTML=bt.process.map((s,i)=>`
+    <div class="process-step">
+      <div class="ps-num">${i+1}</div>
+      <div><div class="ps-title">${s.t}</div><div class="ps-desc">${s.d}</div></div>
+    </div>`).join('');
+  document.getElementById('inst-phases').innerHTML=bt.inst.map((ph,pi)=>`
+    <div class="inst-phase">
+      <div class="inst-phase-header" onclick="togglePhase(${pi})" id="phase-hdr-${pi}">
+        <div class="inst-phase-icon" style="background:${ph.cl}22;">${ph.ph.split(' ')[0]}</div>
+        <span class="inst-phase-title">${ph.ph.substring(ph.ph.indexOf(' ')+1)}</span>
+        <span class="inst-phase-time">${ph.tm}</span>
+        <span class="inst-phase-chevron" id="phase-chev-${pi}">▼</span>
+      </div>
+      <div class="inst-steps-list" id="phase-steps-${pi}">
+        ${ph.st.map(s=>`<div class="inst-step-item">
+          <div class="inst-step-dot"></div>
+          <div><div class="inst-step-text">${s.t}</div>${s.tip?`<div class="inst-tip">💡 ${s.tip}</div>`:''}</div>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+  const res=document.getElementById('bread-results');
+  res.classList.remove('hidden');res.classList.add('anim');
+  document.getElementById('inst-body').classList.remove('open');
+  document.getElementById('inst-toggle-label').textContent='▼ פתח';
+  setTimeout(()=>res.scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+function toggleInstructions(){
+  const body=document.getElementById('inst-body'),label=document.getElementById('inst-toggle-label');
+  const isOpen=body.classList.toggle('open');
+  label.textContent=isOpen?'▲ סגור':'▼ פתח';
+  if(isOpen){const h=document.getElementById('phase-hdr-0');if(h&&!h.classList.contains('open'))togglePhase(0);}
+}
+function togglePhase(idx){
+  const hdr=document.getElementById(`phase-hdr-${idx}`),steps=document.getElementById(`phase-steps-${idx}`),chev=document.getElementById(`phase-chev-${idx}`);
+  const isOpen=steps.classList.toggle('open');
+  hdr.classList.toggle('open',isOpen);
+  chev.style.transform=isOpen?'rotate(180deg)':'';
+}
+init();
+</script>
+</body>
+</html>
