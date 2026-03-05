@@ -160,6 +160,26 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 .wiz-divider{font-size:.66rem;color:rgba(247,237,216,.2);text-align:center;margin:6px 0 10px;font-family:'IBM Plex Mono',monospace;}
 .wiz-copy-btn{width:100%;margin-top:14px;padding:13px;border-radius:11px;border:2px solid rgba(200,145,58,.35);background:rgba(200,145,58,.08);color:#C8913A;font-family:'Heebo',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .3s;}
 footer{text-align:center;padding:20px;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--wheat);text-transform:uppercase;opacity:.6;}
+
+/* ═══ WIZARD RESULTS ═══ */
+#wiz-results-overlay{position:fixed;inset:0;z-index:998;background:linear-gradient(160deg,#1E0E04 0%,#3D1F08 50%,#251608 100%);display:flex;flex-direction:column;font-family:'Heebo',sans-serif;direction:rtl;overflow-y:auto;}
+.wzr-header{padding:18px 20px;border-bottom:1px solid rgba(247,237,216,.1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.wzr-tab{padding:7px 14px;border-radius:8px;border:none;background:rgba(255,255,255,.06);color:rgba(247,237,216,.4);font-family:'Heebo',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.wzr-tab.active{background:#C8913A;color:white;}
+.wzr-body{flex:1;padding:20px 20px 32px;max-width:500px;margin:0 auto;width:100%;}
+.wzr-meta{font-size:.7rem;color:rgba(247,237,216,.4);font-family:'IBM Plex Mono',monospace;margin-bottom:16px;line-height:1.6;}
+.wzr-section-title{font-family:'Playfair Display',serif;font-size:.95rem;color:#C8913A;margin-bottom:10px;}
+.wzr-card{background:rgba(255,255,255,.05);border:1px solid rgba(247,237,216,.1);border-radius:14px;overflow:hidden;margin-bottom:12px;}
+.wzr-row{display:flex;align-items:center;padding:11px 16px;border-bottom:1px solid rgba(247,237,216,.08);}
+.wzr-row:last-child{border-bottom:none;}
+.wzr-row-icon{font-size:1rem;margin-left:10px;}
+.wzr-row-label{flex:1;font-size:.82rem;color:#F7EDD8;font-weight:600;}
+.wzr-row-unit{font-size:.6rem;color:rgba(247,237,216,.4);margin-right:3px;font-family:'IBM Plex Mono',monospace;}
+.wzr-row-val{font-family:'IBM Plex Mono',monospace;font-size:1.05rem;font-weight:600;color:#C8913A;}
+.wzr-info-box{background:rgba(200,145,58,.08);border:1px solid rgba(200,145,58,.2);border-radius:10px;padding:10px 14px;font-size:.72rem;color:rgba(247,237,216,.5);font-family:'IBM Plex Mono',monospace;line-height:1.7;margin-bottom:12px;}
+.wzr-copy-btn{width:100%;margin-top:4px;padding:13px;border-radius:11px;border:2px solid rgba(200,145,58,.35);background:rgba(200,145,58,.08);color:#C8913A;font-family:'Heebo',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.wzr-full-btn{width:100%;margin-top:8px;padding:13px;border-radius:11px;background:linear-gradient(135deg,#C8913A 0%,#A05826 100%);color:white;border:none;font-family:'Heebo',sans-serif;font-size:.92rem;font-weight:800;cursor:pointer;}
+
 /* ═══ WIZARD ═══ */
 #wizard-overlay{position:fixed;inset:0;z-index:999;background:linear-gradient(160deg,#1E0E04 0%,#3D1F08 50%,#251608 100%);display:flex;flex-direction:column;overflow-y:auto;}
 .wiz-header{padding:28px 24px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
@@ -292,6 +312,34 @@ footer{text-align:center;padding:20px;font-family:'IBM Plex Mono',monospace;font
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- ═══ WIZARD RESULTS ═══ -->
+<div id="wiz-results-overlay" style="display:none;">
+  <div class="wzr-header">
+    <span class="wiz-logo">🍞 מחמצת</span>
+    <div style="display:flex;gap:6px;">
+      <button class="wzr-tab active" id="wzr-tab-starter" onclick="wzrSetTab('starter')">🧫 מחמצת</button>
+      <button class="wzr-tab" id="wzr-tab-bread" onclick="wzrSetTab('bread')">🍞 לחם</button>
+    </div>
+  </div>
+  <div class="wzr-body">
+    <div class="wzr-meta" id="wzr-meta"></div>
+
+    <div id="wzr-starter-panel">
+      <div class="wzr-section-title">📊 תוכנית האכלה</div>
+      <div class="wzr-card" id="wzr-starter-rows"></div>
+      <div class="wzr-info-box" id="wzr-starter-info"></div>
+    </div>
+
+    <div id="wzr-bread-panel" style="display:none;">
+      <div class="wzr-section-title" id="wzr-bread-title"></div>
+      <div class="wzr-card" id="wzr-bread-rows"></div>
+    </div>
+
+    <button class="wzr-copy-btn" id="wzr-copy-btn" onclick="wzrCopy()">📋 העתק מתכון</button>
+    <button class="wzr-full-btn" onclick="wzrGoFull()">פתח מחשבון מלא</button>
   </div>
 </div>
 
@@ -834,8 +882,9 @@ function wizCopyRecipe(){
 function wizFinish(){
   if(!wizState.city)return;
   const season=wizState.season||getSeasonFromDate();
+  wizState.season=season;
 
-  // Apply to main calculator
+  // Apply to main calculator silently
   currentCity=wizState.city;
   currentSeason=season;
   document.getElementById('city-select').value=wizState.city;
@@ -843,8 +892,6 @@ function wizFinish(){
   document.querySelectorAll('.season-btn').forEach(b=>b.classList.toggle('active',b.dataset.s===season));
   updateSeasonUI();
   setRatio(SEASON_DATA[season].recRatio);
-
-  // Fill values
   document.getElementById('s-loafct').value=wizState.count;
   document.getElementById('s-keep').value=wizState.keep;
   selectBread(wizState.breadId);
@@ -856,15 +903,104 @@ function wizFinish(){
   ov.style.opacity='0';
   setTimeout(()=>{ov.style.display='none';},400);
 
-  // Calculate both tabs, show starter first
-  setTimeout(()=>{
-    showTab('starter');
-    calcStarter();
-    selectBread(wizState.breadId);
-    document.getElementById('b-loaves').value=wizState.count;
-    calcBread();
-    showTab('starter');
-  },450);
+  // Show results overlay
+  setTimeout(()=>wzrShow(),450);
+}
+
+function wzrShow(){
+  const bt=BT.find(b=>b.id===wizState.breadId);
+  if(!bt)return;
+  const season=wizState.season;
+  const sd=SEASON_DATA[season];
+  const cityName=CITIES[wizState.city]?.name||wizState.city;
+  const sn={winter:'חורף 🌧️',spring:'אביב 🌸',summer:'קיץ ☀️',autumn:'סתיו 🍂'}[season];
+  const count=wizState.count,keep=wizState.keep;
+
+  // Calc bread
+  const td=(bt.defWt/bt.loss)*count;
+  const sp=bt.starter/100,wp=bt.hydration/100,saltp=bt.salt/100;
+  const F=td/(1+wp+sp+saltp);
+
+  // Calc starter
+  const forBaking=F*sp;
+  const total=forBaking+keep;
+  const r=sd.recRatio;
+  const oldStarter=total/(1+2*r);
+
+  // Meta
+  document.getElementById('wzr-meta').textContent=`${bt.emoji} ${bt.name} · ${count} ${bt.unit} · ${cityName} · ${sn}`;
+
+  // Starter rows
+  const sRows=[
+    {icon:'🫙',label:'מחמצת קיימת לשקול',val:Math.round(oldStarter)},
+    {icon:'🌾',label:'קמח להוסיף',val:Math.round(oldStarter*r)},
+    {icon:'💧',label:'מים להוסיף',val:Math.round(oldStarter*r)},
+    {icon:'📦',label:'סה"כ אחרי האכלה',val:Math.round(total)},
+    {icon:'🍞',label:`לאפייה (${count} יח')`,val:Math.round(forBaking)},
+    {icon:'🧊',label:'נשאר לפעם הבאה',val:keep},
+  ];
+  document.getElementById('wzr-starter-rows').innerHTML=sRows.map(r=>`
+    <div class="wzr-row">
+      <span class="wzr-row-icon">${r.icon}</span>
+      <span class="wzr-row-label">${r.label}</span>
+      <span class="wzr-row-unit">גר'</span>
+      <span class="wzr-row-val">${r.val}</span>
+    </div>`).join('');
+  document.getElementById('wzr-starter-info').innerHTML=
+    `⏱ זמן תפיחה: <span style="color:#C8913A">${sd.riseLow}–${sd.riseHigh} שעות</span><br>🔄 יחס מומלץ: <span style="color:#C8913A">1:${r}:${r}</span>`;
+
+  // Bread rows
+  const bRows=[
+    {icon:'🌾',label:'קמח סה"כ',val:Math.round(F)},
+    {icon:'🧫',label:'מחמצת',val:Math.round(F*sp)},
+    {icon:'💧',label:'מים',val:Math.round(F*wp)},
+    {icon:'🧂',label:'מלח',val:Math.round(F*saltp)},
+  ];
+  document.getElementById('wzr-bread-title').textContent=`${bt.emoji} ${bt.name} · ${count} ${bt.unit}`;
+  document.getElementById('wzr-bread-rows').innerHTML=bRows.map(r=>`
+    <div class="wzr-row">
+      <span class="wzr-row-icon">${r.icon}</span>
+      <span class="wzr-row-label">${r.label}</span>
+      <span class="wzr-row-unit">גר'</span>
+      <span class="wzr-row-val">${r.val}</span>
+    </div>`).join('');
+
+  document.getElementById('wiz-results-overlay').style.display='flex';
+  document.getElementById('wiz-results-overlay').style.flexDirection='column';
+  wzrSetTab('starter');
+}
+
+function wzrSetTab(tab){
+  document.getElementById('wzr-starter-panel').style.display=tab==='starter'?'block':'none';
+  document.getElementById('wzr-bread-panel').style.display=tab==='bread'?'block':'none';
+  document.getElementById('wzr-tab-starter').classList.toggle('active',tab==='starter');
+  document.getElementById('wzr-tab-bread').classList.toggle('active',tab==='bread');
+}
+
+function wzrCopy(){
+  const bt=BT.find(b=>b.id===wizState.breadId);
+  if(!bt)return;
+  const text=wizBuildCopyText(bt,wizState.count,wizState.city,wizState.season,wizState.keep);
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.focus();ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    const btn=document.getElementById('wzr-copy-btn');
+    btn.textContent='✅ הועתק!';
+    btn.style.color='#8BC46A';btn.style.borderColor='#5A7138';btn.style.background='rgba(90,113,56,.15)';
+    setTimeout(()=>{btn.innerHTML='📋 העתק מתכון';btn.style.color='';btn.style.borderColor='';btn.style.background='';},2500);
+  }catch(e){}
+}
+
+function wzrGoFull(){
+  document.getElementById('wiz-results-overlay').style.display='none';
+  showTab('starter');
+  calcStarter();
+  selectBread(wizState.breadId);
+  document.getElementById('b-loaves').value=wizState.count;
+  calcBread();
+  showTab('starter');
 }
 
 function skipWizard(){
