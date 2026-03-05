@@ -198,7 +198,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 footer{text-align:center;padding:20px;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--wheat);text-transform:uppercase;opacity:.6;}
 
 /* ═══ WIZARD RESULTS ═══ */
-#wiz-results-overlay{position:fixed;inset:0;z-index:998;background:linear-gradient(160deg,#1E0E04 0%,#3D1F08 50%,#251608 100%);display:flex;flex-direction:column;font-family:'Heebo',sans-serif;direction:rtl;overflow-y:auto;}
+#wizard-overlay:not([style*="display:none"]) ~ .tab-nav,
+#wizard-overlay:not([style*="display:none"]) ~ .hero,
+#wizard-overlay:not([style*="display:none"]) ~ #tab-starter,
+#wizard-overlay:not([style*="display:none"]) ~ #tab-bread,
+#wizard-overlay:not([style*="opacity: 0"]) ~ .tab-nav,
+#wizard-overlay:not([style*="opacity: 0"]) ~ .hero { visibility: hidden !important; }
+
+#wiz-results-overlay{position:fixed;inset:0;z-index:1000;background:linear-gradient(160deg,#1E0E04 0%,#3D1F08 50%,#251608 100%);display:flex;flex-direction:column;font-family:'Heebo',sans-serif;direction:rtl;overflow-y:auto;}
 .wzr-header{padding:18px 20px;border-bottom:1px solid rgba(247,237,216,.1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .wzr-tab{padding:7px 14px;border-radius:8px;border:none;background:rgba(255,255,255,.06);color:rgba(247,237,216,.4);font-family:'Heebo',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s;}
 .wzr-tab.active{background:#C8913A;color:white;}
@@ -355,10 +362,10 @@ footer{text-align:center;padding:20px;font-family:'IBM Plex Mono',monospace;font
 <div id="wiz-results-overlay" style="display:none;">
   <div class="wzr-header">
     <span class="wiz-logo">🍞 מחמצת</span>
-    <div style="display:flex;gap:6px;">
-      <button class="wzr-tab active" id="wzr-tab-starter" onclick="wzrSetTab('starter')">🧫 מחמצת</button>
-      <button class="wzr-tab" id="wzr-tab-bread" onclick="wzrSetTab('bread')">🍞 לחם</button>
-    </div>
+  </div>
+  <div style="display:flex;gap:8px;justify-content:center;padding:14px 20px 0;flex-shrink:0;">
+    <button class="wzr-tab active" id="wzr-tab-starter" onclick="wzrSetTab('starter')" style="padding:10px 28px;font-size:.88rem;">🧫 מחמצת</button>
+    <button class="wzr-tab" id="wzr-tab-bread" onclick="wzrSetTab('bread')" style="padding:10px 28px;font-size:.88rem;">🍞 לחם</button>
   </div>
   <div class="wzr-body">
     <div class="wzr-meta" id="wzr-meta"></div>
@@ -947,28 +954,19 @@ function wizFinish(){
   const season=wizState.season||getSeasonFromDate();
   wizState.season=season;
 
-  // Apply to main calculator silently
+  // Apply to main calculator silently IN BACKGROUND
   currentCity=wizState.city;
   currentSeason=season;
-  document.getElementById('city-select').value=wizState.city;
-  updateCityTemps();
-  document.querySelectorAll('.season-btn').forEach(b=>b.classList.toggle('active',b.dataset.s===season));
-  updateSeasonUI();
-  setRatio(SEASON_DATA[season].recRatio);
-  document.getElementById('s-loafct').value=wizState.count;
-  document.getElementById('s-keep').value=wizState.keep;
-  // Set selectedBread silently without triggering UI
   selectedBread=BT.find(b=>b.id===wizState.breadId);
-  document.getElementById('b-loaves').value=wizState.count;
 
-  // Hide wizard
+  // Show results overlay INSTANTLY — before wizard even fades
+  wzrShow();
+
+  // Then fade out wizard on top
   const ov=document.getElementById('wizard-overlay');
-  ov.style.transition='opacity .4s ease';
+  ov.style.transition='opacity .3s ease';
   ov.style.opacity='0';
-  setTimeout(()=>{ov.style.display='none';},400);
-
-  // Show results overlay (no pre-calculation to avoid flash)
-  setTimeout(()=>wzrShow(),450);
+  setTimeout(()=>{ ov.style.display='none'; }, 300);
 }
 
 function wzrShow(){
@@ -1277,9 +1275,9 @@ async function botSend(){
     content.push({type:'text',text:text||(b64?'תנתח את התמונה הזו':'')});
     apiMsgs.push({role:'user',content});
 
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
+    const res = await fetch('https://sourdough-bot.YOUR-SUBDOMAIN.workers.dev',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{'Content-Type':'application/json'},  // API key מוסתר ב-Worker
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',
         max_tokens:1000,
@@ -1302,7 +1300,7 @@ async function botSend(){
 </script>
 
 <!-- ═══ SOURDOUGH BOT ═══ -->
-<button id="bot-fab" onclick="botToggle()">🍞</button>
+<button id="bot-fab" onclick="botToggle()">💬</button>
 <div id="bot-window" style="display:none;">
   <div class="bot-header">
     <div class="bot-avatar">🍞</div>
