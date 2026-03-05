@@ -156,10 +156,145 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 .inst-step-text{font-size:.78rem;color:rgba(247,237,216,.85);line-height:1.55;}
 .inst-step-text strong{color:#FFD97A;font-weight:700;}
 .inst-tip{margin:5px 0 0;padding:8px 12px;background:rgba(200,145,58,.1);border-right:3px solid var(--wheat);border-radius:0 6px 6px 0;font-size:.72rem;color:rgba(247,237,216,.65);font-style:italic;line-height:1.45;}
+.wiz-season-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(200,145,58,.1);border:1px solid rgba(200,145,58,.22);border-radius:10px;padding:8px 13px;font-size:.78rem;color:#C8913A;font-family:'IBM Plex Mono',monospace;margin-bottom:16px;}
+.wiz-divider{font-size:.66rem;color:rgba(247,237,216,.2);text-align:center;margin:6px 0 10px;font-family:'IBM Plex Mono',monospace;}
+.wiz-copy-btn{width:100%;margin-top:14px;padding:13px;border-radius:11px;border:2px solid rgba(200,145,58,.35);background:rgba(200,145,58,.08);color:#C8913A;font-family:'Heebo',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .3s;}
 footer{text-align:center;padding:20px;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--wheat);text-transform:uppercase;opacity:.6;}
+/* ═══ WIZARD ═══ */
+#wizard-overlay{position:fixed;inset:0;z-index:999;background:linear-gradient(160deg,#1E0E04 0%,#3D1F08 50%,#251608 100%);display:flex;flex-direction:column;overflow-y:auto;}
+.wiz-header{padding:28px 24px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.wiz-logo{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--wheat);font-style:italic;}
+.wiz-skip{font-size:0.72rem;font-family:'IBM Plex Mono',monospace;color:rgba(247,237,216,.35);background:none;border:1px solid rgba(247,237,216,.15);padding:6px 14px;border-radius:8px;cursor:pointer;transition:all .2s;}
+.wiz-skip:hover{color:var(--wheat);border-color:var(--wheat);}
+.wiz-progress{display:flex;gap:6px;padding:20px 24px 0;flex-shrink:0;}
+.wiz-dot{height:4px;border-radius:2px;background:rgba(247,237,216,.15);flex:1;transition:background .3s;}
+.wiz-dot.done{background:var(--wheat);}
+.wiz-dot.active{background:var(--wheat);opacity:.6;}
+.wiz-body{flex:1;padding:24px 20px 32px;max-width:560px;margin:0 auto;width:100%;}
+.wiz-q{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,5vw,2rem);font-weight:700;color:var(--cream);margin-bottom:8px;line-height:1.2;}
+.wiz-sub{font-size:0.82rem;color:rgba(247,237,216,.45);margin-bottom:28px;font-family:'IBM Plex Mono',monospace;}
+.wiz-step{display:none;}
+.wiz-step.active{display:block;animation:fadeUp .35s ease;}
+/* Step 1 — bread grid */
+.wiz-bread-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media(min-width:420px){.wiz-bread-grid{grid-template-columns:repeat(3,1fr);}}
+.wiz-bread-btn{border:2px solid rgba(247,237,216,.12);border-radius:16px;padding:16px 10px 14px;text-align:center;cursor:pointer;background:rgba(255,255,255,.04);transition:all .18s;position:relative;}
+.wiz-bread-btn:hover{border-color:rgba(200,145,58,.5);background:rgba(200,145,58,.08);}
+.wiz-bread-btn.active{border-color:var(--wheat);background:rgba(200,145,58,.15);box-shadow:0 0 0 1px var(--wheat);}
+.wiz-bread-btn .bt-emoji{font-size:2rem;margin-bottom:7px;}
+.wiz-bread-btn .bt-name{font-size:.78rem;font-weight:700;color:var(--cream);}
+.wiz-bread-btn .bt-desc{font-size:.6rem;color:rgba(247,237,216,.4);margin-top:3px;}
+/* Step 2 — count */
+.wiz-count-row{display:flex;align-items:center;justify-content:center;gap:20px;margin:20px 0 32px;}
+.wiz-count-btn{width:52px;height:52px;border-radius:50%;border:2px solid rgba(200,145,58,.4);background:none;color:var(--wheat);font-size:1.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.wiz-count-btn:hover{background:rgba(200,145,58,.15);border-color:var(--wheat);}
+.wiz-count-num{font-family:'IBM Plex Mono',monospace;font-size:3rem;font-weight:600;color:var(--cream);min-width:60px;text-align:center;}
+.wiz-count-unit{font-size:.8rem;color:rgba(247,237,216,.4);font-family:'IBM Plex Mono',monospace;margin-top:4px;text-align:center;}
+/* Step 3 — location */
+.wiz-loc-btn{width:100%;padding:16px 20px;border:2px solid rgba(200,145,58,.3);border-radius:14px;background:rgba(255,255,255,.04);color:var(--cream);font-family:'Heebo',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:12px;margin-bottom:12px;transition:all .18s;}
+.wiz-loc-btn:hover{border-color:var(--wheat);background:rgba(200,145,58,.1);}
+.wiz-loc-btn .loc-icon{font-size:1.4rem;flex-shrink:0;}
+.wiz-loc-btn .loc-text{text-align:right;flex:1;}
+.wiz-loc-btn .loc-sub{font-size:.68rem;color:rgba(247,237,216,.4);font-weight:400;display:block;margin-top:2px;}
+.wiz-city-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:14px;}
+.wiz-city-btn{padding:12px;border:2px solid rgba(247,237,216,.12);border-radius:12px;background:rgba(255,255,255,.03);color:rgba(247,237,216,.7);font-family:'Heebo',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;text-align:center;transition:all .18s;}
+.wiz-city-btn:hover{border-color:rgba(200,145,58,.5);color:var(--cream);}
+.wiz-city-btn.active{border-color:var(--wheat);background:rgba(200,145,58,.15);color:var(--cream);}
+.wiz-detect-status{font-size:.75rem;font-family:'IBM Plex Mono',monospace;color:var(--wheat);padding:10px 0;text-align:center;}
+/* Nav buttons */
+.wiz-nav{display:flex;gap:12px;margin-top:24px;}
+.wiz-back{padding:14px 20px;border:2px solid rgba(247,237,216,.15);border-radius:12px;background:none;color:rgba(247,237,216,.5);font-family:'Heebo',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.wiz-back:hover{border-color:rgba(247,237,216,.4);color:var(--cream);}
+.wiz-next{flex:1;padding:14px;border-radius:12px;background:linear-gradient(135deg,var(--wheat) 0%,#A05826 100%);color:white;border:none;font-family:'Heebo',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s;box-shadow:0 4px 16px rgba(200,145,58,.3);opacity:.4;pointer-events:none;}
+.wiz-next.ready{opacity:1;pointer-events:auto;}
+.wiz-next.ready:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(200,145,58,.4);}
+
 </style>
 </head>
 <body>
+<!-- ═══ WIZARD OVERLAY ═══ -->
+<div id="wizard-overlay">
+  <div class="wiz-header">
+    <span class="wiz-logo">🍞 מחמצת</span>
+    <button class="wiz-skip" onclick="skipWizard()">דלג למחשבון המלא</button>
+  </div>
+  <div class="wiz-progress">
+    <div class="wiz-dot active" id="wdot-0"></div>
+    <div class="wiz-dot" id="wdot-1"></div>
+    <div class="wiz-dot" id="wdot-2"></div>
+    <div class="wiz-dot" id="wdot-3"></div>
+  </div>
+  <div class="wiz-body">
+
+    <!-- Step 1: bread type -->
+    <div class="wiz-step active" id="wstep-0">
+      <div class="wiz-q">מה תאפה היום?</div>
+      <div class="wiz-sub">בחר סוג לחם אחד</div>
+      <div class="wiz-bread-grid" id="wiz-bread-grid"></div>
+      <div class="wiz-nav">
+        <button class="wiz-next" id="wiz-next-0" onclick="wizNext(1)">הבא</button>
+      </div>
+    </div>
+
+    <!-- Step 2: count -->
+    <div class="wiz-step" id="wstep-1">
+      <div class="wiz-q">כמה <span id="wiz-count-unit-label">כיכרות</span>?</div>
+      <div class="wiz-sub">המחשבון יחשב את הכמויות המדויקות</div>
+      <div class="wiz-count-row">
+        <button class="wiz-count-btn" onclick="wizCountChange(-1)">−</button>
+        <div>
+          <div class="wiz-count-num" id="wiz-count-num">2</div>
+          <div class="wiz-count-unit" id="wiz-count-unit-sub"></div>
+        </div>
+        <button class="wiz-count-btn" onclick="wizCountChange(1)">+</button>
+      </div>
+      <div class="wiz-nav">
+        <button class="wiz-back" onclick="wizNext(0)">חזור</button>
+        <button class="wiz-next ready" onclick="wizNext(2)">הבא</button>
+      </div>
+    </div>
+
+    <!-- Step 3: location -->
+    <div class="wiz-step" id="wstep-2">
+      <div class="wiz-q">איפה אתה נמצא?</div>
+      <div class="wiz-sub">נשתמש בזה לחישוב זמני תפיחה</div>
+      <div class="wiz-season-badge" id="wiz-season-badge"></div>
+      <button class="wiz-loc-btn" onclick="wizDetectLocation()" id="wiz-detect-btn">
+        <span class="loc-icon">📍</span>
+        <span class="loc-text">זהה את המיקום שלי
+          <span class="loc-sub">מדויק יותר — ישאל הרשאה</span>
+        </span>
+      </button>
+      <div class="wiz-detect-status" id="wiz-detect-status"></div>
+      <div class="wiz-divider">— או בחר ידנית —</div>
+      <div class="wiz-city-grid" id="wiz-city-grid"></div>
+      <div class="wiz-nav">
+        <button class="wiz-back" onclick="wizNext(1)">חזור</button>
+        <button class="wiz-next" id="wiz-next-2" onclick="wizNext(3)">הבא</button>
+      </div>
+    </div>
+
+    <!-- Step 4: keep starter -->
+    <div class="wiz-step" id="wstep-3">
+      <div class="wiz-q">כמה מחמצת לשמור?</div>
+      <div class="wiz-sub">כמות שתישאר בצנצנת לאפייה הבאה</div>
+      <div class="wiz-count-row">
+        <button class="wiz-count-btn" onclick="wizKeepChange(-10)">−</button>
+        <div>
+          <div class="wiz-count-num" id="wiz-keep-num">50</div>
+          <div class="wiz-count-unit">גר׳</div>
+        </div>
+        <button class="wiz-count-btn" onclick="wizKeepChange(10)">+</button>
+      </div>
+      <div class="wiz-nav">
+        <button class="wiz-back" onclick="wizNext(2)">חזור</button>
+        <button class="wiz-next ready" onclick="wizFinish()">🍞 חשב הכל!</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <div class="hero">
   <div class="hero-glow"></div>
   <span class="hero-emoji">🍞</span>
@@ -265,6 +400,7 @@ footer{text-align:center;padding:20px;font-family:'IBM Plex Mono',monospace;font
       <div class="brc-header"><h3 id="br-title">מתכון לחם</h3><span class="brc-loaves" id="br-sub"></span></div>
       <div id="br-ingredients"></div>
     </div>
+    <button id="wiz-copy-btn" class="wiz-copy-btn" onclick="wizCopyRecipe()">📋 העתק מתכון</button>
     <div class="flour-breakdown"><h4 id="br-flour-title">🌾 קמח</h4><div id="br-flour-bars"></div></div>
     <div class="process-tips"><h4>📋 סיכום שלבים</h4><div id="br-process-steps"></div></div>
     <div class="instructions-card">
@@ -533,6 +669,213 @@ function togglePhase(idx){
   hdr.classList.toggle('open',isOpen);
   chev.style.transform=isOpen?'rotate(180deg)':'';
 }
+
+// ═══ WIZARD ═══
+const CITY_LIST=[
+  {id:'tlv',label:'תל אביב / מרכז',coords:[32.08,34.78]},
+  {id:'jerusalem',label:'ירושלים',coords:[31.77,35.21]},
+  {id:'haifa',label:'חיפה',coords:[32.79,34.99]},
+  {id:'beersheva',label:'באר שבע',coords:[31.25,34.79]},
+  {id:'eilat',label:'אילת',coords:[29.55,34.95]},
+  {id:'galil',label:'גליל / צפון',coords:[32.9,35.5]}
+];
+
+const SEASON_NAMES={winter:{name:'חורף',emoji:'🌧️'},spring:{name:'אביב',emoji:'🌸'},summer:{name:'קיץ',emoji:'☀️'},autumn:{name:'סתיו',emoji:'🍂'}};
+
+let wizState={breadId:null,count:2,city:null,season:null,keep:50};
+
+function getSeasonFromDate(){
+  const m=new Date().getMonth()+1;
+  if(m>=12||m<=2)return'winter';
+  if(m>=3&&m<=5)return'spring';
+  if(m>=6&&m<=8)return'summer';
+  return'autumn';
+}
+
+function getNearestCity(lat,lng){
+  let best='tlv',bestDist=Infinity;
+  CITY_LIST.forEach(c=>{
+    const d=Math.hypot(c.coords[0]-lat,c.coords[1]-lng);
+    if(d<bestDist){bestDist=d;best=c.id;}
+  });
+  return best;
+}
+
+function initWizard(){
+  const season=getSeasonFromDate();
+  wizState.season=season;
+  const sn=SEASON_NAMES[season];
+  const sd=SEASON_DATA[season];
+
+  // Season badge
+  document.getElementById('wiz-season-badge').textContent=`${sn.emoji} זוהה אוטומטית: ${sn.name} · ${sd.riseLow}–${sd.riseHigh} שעות תפיחה`;
+
+  // Bread grid
+  document.getElementById('wiz-bread-grid').innerHTML=BT.map(bt=>`
+    <div class="wiz-bread-btn" data-id="${bt.id}" onclick="wizSelectBread('${bt.id}')">
+      <span class="bt-emoji">${bt.emoji}</span>
+      <div class="bt-name">${bt.name}</div>
+      <div class="bt-desc">${bt.desc}</div>
+    </div>`).join('');
+
+  // City grid
+  document.getElementById('wiz-city-grid').innerHTML=CITY_LIST.map(c=>`
+    <button class="wiz-city-btn" data-city="${c.id}" onclick="wizSelectCity('${c.id}')">${c.label}</button>
+  `).join('');
+}
+
+function wizSelectBread(id){
+  wizState.breadId=id;
+  document.querySelectorAll('.wiz-bread-btn').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+  document.getElementById('wiz-next-0').classList.add('ready');
+  const bt=BT.find(b=>b.id===id);
+  wizState.count=bt.defCount;
+  document.getElementById('wiz-count-unit-label').textContent=bt.unit;
+  document.getElementById('wiz-count-unit-sub').textContent=bt.unit;
+  document.getElementById('wiz-count-num').textContent=bt.defCount;
+}
+
+function wizCountChange(delta){
+  wizState.count=Math.max(1,Math.min(20,wizState.count+delta));
+  document.getElementById('wiz-count-num').textContent=wizState.count;
+}
+
+function wizKeepChange(delta){
+  wizState.keep=Math.max(20,Math.min(200,wizState.keep+delta));
+  document.getElementById('wiz-keep-num').textContent=wizState.keep;
+}
+
+function wizNext(step){
+  document.querySelectorAll('.wiz-step').forEach((s,i)=>s.classList.toggle('active',i===step));
+  document.querySelectorAll('.wiz-dot').forEach((d,i)=>{
+    d.classList.toggle('done',i<step);
+    d.classList.toggle('active',i===step);
+  });
+  if(step===2&&wizState.city) document.getElementById('wiz-next-2').classList.add('ready');
+}
+
+function wizSelectCity(id){
+  wizState.city=id;
+  document.querySelectorAll('.wiz-city-btn').forEach(b=>b.classList.toggle('active',b.dataset.city===id));
+  document.getElementById('wiz-next-2').classList.add('ready');
+  document.getElementById('wiz-detect-status').textContent='';
+}
+
+function wizDetectLocation(){
+  if(!navigator.geolocation){document.getElementById('wiz-detect-status').textContent='הדפדפן לא תומך בזיהוי מיקום';return;}
+  document.getElementById('wiz-detect-status').textContent='⏳ מאתר מיקום...';
+  document.getElementById('wiz-detect-btn').style.opacity='0.5';
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      const city=getNearestCity(pos.coords.latitude,pos.coords.longitude);
+      wizSelectCity(city);
+      const name=CITY_LIST.find(c=>c.id===city).label;
+      document.getElementById('wiz-detect-status').textContent=`📍 זוהה: ${name}`;
+      document.getElementById('wiz-detect-btn').style.opacity='1';
+    },
+    ()=>{
+      document.getElementById('wiz-detect-status').textContent='לא הצלחנו לזהות — בחר ידנית';
+      document.getElementById('wiz-detect-btn').style.opacity='1';
+    }
+  );
+}
+
+function wizBuildCopyText(bt,count,cityId,season,keep){
+  const cityName=CITY_LIST.find(c=>c.id===cityId)?.label||'';
+  const sn=SEASON_NAMES[season];
+  const sd=SEASON_DATA[season];
+  const td=(bt.defWt/bt.loss)*count;
+  const sp=bt.starter/100,wp=bt.hydration/100,saltp=bt.salt/100;
+  const F=td/(1+wp+sp+saltp);
+  const forBaking=(850/0.82)*count*sp;
+  const total=forBaking+keep;
+  const r=sd.recRatio;
+  const old=total/(1+2*r);
+  return [
+    `🍞 תוכנית אפייה — ${bt.emoji} ${bt.name}`,
+    `📍 ${cityName} · ${sn.emoji} ${sn.name}`,
+    ``,
+    `🧫 האכלת מחמצת`,
+    `  מחמצת קיימת: ${Math.round(old)} גר'`,
+    `  קמח להוסיף: ${Math.round(old*r)} גר'`,
+    `  מים להוסיף: ${Math.round(old*r)} גר'`,
+    `  סה"כ אחרי האכלה: ${Math.round(total)} גר'`,
+    `  לאפייה (${count} יח'): ${Math.round(forBaking)} גר'`,
+    `  נשאר לפעם הבאה: ${keep} גר'`,
+    `  ⏱ זמן תפיחה: ${sd.riseLow}–${sd.riseHigh} שעות`,
+    ``,
+    `🍞 מתכון ${bt.name} (${count} ${bt.unit})`,
+    `  קמח: ${Math.round(F)} גר'`,
+    `  מחמצת: ${Math.round(F*sp)} גר'`,
+    `  מים: ${Math.round(F*wp)} גר'`,
+    `  מלח: ${Math.round(F*saltp)} גר'`,
+    ``,
+    `🔗 https://guyroginski-afk.github.io/sourdough`,
+  ].join('\n');
+}
+
+function wizCopyRecipe(){
+  const bt=BT.find(b=>b.id===wizState.breadId);
+  if(!bt)return;
+  const text=wizBuildCopyText(bt,wizState.count,wizState.city,wizState.season,wizState.keep);
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.focus();ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    const btn=document.getElementById('wiz-copy-btn');
+    btn.textContent='✅ הועתק!';
+    btn.style.color='#8BC46A';btn.style.borderColor='#5A7138';btn.style.background='rgba(90,113,56,.15)';
+    setTimeout(()=>{btn.textContent='📋 העתק מתכון';btn.style.color='';btn.style.borderColor='';btn.style.background='';},2500);
+  }catch(e){alert(text);}
+}
+
+function wizFinish(){
+  if(!wizState.city)return;
+  const season=wizState.season||getSeasonFromDate();
+
+  // Apply to main calculator
+  currentCity=wizState.city;
+  currentSeason=season;
+  document.getElementById('city-select').value=wizState.city;
+  updateCityTemps();
+  document.querySelectorAll('.season-btn').forEach(b=>b.classList.toggle('active',b.dataset.s===season));
+  updateSeasonUI();
+  setRatio(SEASON_DATA[season].recRatio);
+
+  // Fill values
+  document.getElementById('s-loafct').value=wizState.count;
+  document.getElementById('s-keep').value=wizState.keep;
+  selectBread(wizState.breadId);
+  document.getElementById('b-loaves').value=wizState.count;
+
+  // Hide wizard
+  const ov=document.getElementById('wizard-overlay');
+  ov.style.transition='opacity .4s ease';
+  ov.style.opacity='0';
+  setTimeout(()=>{ov.style.display='none';},400);
+
+  // Calculate both tabs, show starter first
+  setTimeout(()=>{
+    showTab('starter');
+    calcStarter();
+    selectBread(wizState.breadId);
+    document.getElementById('b-loaves').value=wizState.count;
+    calcBread();
+    showTab('starter');
+  },450);
+}
+
+function skipWizard(){
+  const ov=document.getElementById('wizard-overlay');
+  ov.style.transition='opacity .3s ease';
+  ov.style.opacity='0';
+  setTimeout(()=>{ov.style.display='none';},300);
+}
+
+initWizard();
+
 init();
 </script>
 </body>
