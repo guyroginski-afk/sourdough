@@ -1275,7 +1275,7 @@ async function botSend(){
     content.push({type:'text',text:text||(b64?'תנתח את התמונה הזו':'')});
     apiMsgs.push({role:'user',content});
 
-    const res = await fetch('https://sourdough-bot.YOUR-SUBDOMAIN.workers.dev',{
+    const res = await fetch('https://sourdough.guyroginski.workers.dev',{
       method:'POST',
       headers:{'Content-Type':'application/json'},  // API key מוסתר ב-Worker
       body:JSON.stringify({
