@@ -159,6 +159,42 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 .wiz-season-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(200,145,58,.1);border:1px solid rgba(200,145,58,.22);border-radius:10px;padding:8px 13px;font-size:.78rem;color:#C8913A;font-family:'IBM Plex Mono',monospace;margin-bottom:16px;}
 .wiz-divider{font-size:.66rem;color:rgba(247,237,216,.2);text-align:center;margin:6px 0 10px;font-family:'IBM Plex Mono',monospace;}
 .wiz-copy-btn{width:100%;margin-top:14px;padding:13px;border-radius:11px;border:2px solid rgba(200,145,58,.35);background:rgba(200,145,58,.08);color:#C8913A;font-family:'Heebo',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;transition:all .3s;}
+
+/* ═══ SOURDOUGH BOT ═══ */
+#bot-fab{position:fixed;bottom:24px;left:24px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#C8913A,#7B4A1D);border:none;cursor:pointer;font-size:1.4rem;box-shadow:0 4px 20px rgba(200,145,58,.5);transition:transform .2s,box-shadow .2s;z-index:9999;display:flex;align-items:center;justify-content:center;}
+#bot-fab:hover{transform:scale(1.1);box-shadow:0 8px 28px rgba(200,145,58,.6);}
+#bot-window{position:fixed;bottom:88px;left:24px;width:320px;height:480px;background:linear-gradient(160deg,#1E0E04 0%,#2D1508 100%);border:1px solid rgba(200,145,58,.3);border-radius:20px;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.6);z-index:9998;overflow:hidden;animation:botPopIn .2s ease;}
+@keyframes botPopIn{from{opacity:0;transform:scale(.92) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.bot-header{padding:12px 16px;border-bottom:1px solid rgba(247,237,216,.1);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.bot-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#C8913A,#7B4A1D);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.bot-name{font-size:.86rem;font-weight:700;color:#F7EDD8;}
+.bot-status{font-size:.63rem;color:#8BC46A;display:flex;align-items:center;gap:4px;}
+.bot-status::before{content:'';width:5px;height:5px;border-radius:50%;background:#8BC46A;display:inline-block;}
+.bot-messages{flex:1;overflow-y:auto;padding:12px 12px 0;scrollbar-width:none;}
+.bot-messages::-webkit-scrollbar{display:none;}
+.bot-msg{display:flex;gap:8px;margin-bottom:12px;align-items:flex-start;}
+.bot-msg.user{flex-direction:row-reverse;}
+.bot-bubble{max-width:78%;padding:9px 13px;border-radius:14px;font-size:.82rem;line-height:1.6;color:#F7EDD8;white-space:pre-wrap;direction:rtl;text-align:right;}
+.bot-msg.bot .bot-bubble{background:rgba(255,255,255,.07);border:1px solid rgba(247,237,216,.1);border-radius:14px 14px 14px 4px;}
+.bot-msg.user .bot-bubble{background:linear-gradient(135deg,#C8913A,#A05826);border-radius:14px 14px 4px 14px;}
+.bot-msg-img{max-width:160px;border-radius:10px;margin-bottom:5px;display:block;border:1px solid rgba(247,237,216,.1);}
+.bot-typing{display:flex;gap:4px;padding:10px 14px;align-items:center;}
+.bot-typing span{width:6px;height:6px;border-radius:50%;background:#C8913A;animation:botBounce 1.2s ease infinite;}
+.bot-typing span:nth-child(2){animation-delay:.2s;}
+.bot-typing span:nth-child(3){animation-delay:.4s;}
+@keyframes botBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.bot-img-preview{padding:6px 12px 0;flex-shrink:0;}
+.bot-img-thumb{height:55px;border-radius:8px;border:1px solid rgba(247,237,216,.1);position:relative;display:inline-block;}
+.bot-img-thumb img{height:55px;border-radius:8px;}
+.bot-img-remove{position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#7B4A1D;border:none;color:white;font-size:.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.bot-input-row{padding:8px 10px 10px;border-top:1px solid rgba(247,237,216,.1);display:flex;gap:7px;align-items:flex-end;flex-shrink:0;}
+.bot-cam-btn{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.06);border:1px solid rgba(247,237,216,.1);color:rgba(247,237,216,.4);font-size:.95rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.bot-textarea{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(247,237,216,.1);border-radius:9px;padding:7px 11px;color:#F7EDD8;font-size:.8rem;font-family:'Heebo',sans-serif;resize:none;outline:none;direction:rtl;line-height:1.5;max-height:72px;overflow-y:auto;}
+.bot-textarea::placeholder{color:rgba(247,237,216,.3);}
+.bot-send{width:34px;height:34px;border-radius:9px;border:none;font-size:.85rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.bot-send.ready{background:linear-gradient(135deg,#C8913A,#A05826);color:white;}
+.bot-send.idle{background:rgba(200,145,58,.15);color:rgba(247,237,216,.3);cursor:not-allowed;}
+
 footer{text-align:center;padding:20px;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--wheat);text-transform:uppercase;opacity:.6;}
 
 /* ═══ WIZARD RESULTS ═══ */
@@ -336,6 +372,9 @@ footer{text-align:center;padding:20px;font-family:'IBM Plex Mono',monospace;font
     <div id="wzr-bread-panel" style="display:none;">
       <div class="wzr-section-title" id="wzr-bread-title"></div>
       <div class="wzr-card" id="wzr-bread-rows"></div>
+      <div id="wzr-flour-section"></div>
+      <div id="wzr-process-section"></div>
+      <div id="wzr-inst-section"></div>
     </div>
 
     <button class="wzr-copy-btn" id="wzr-copy-btn" onclick="wzrCopy()">📋 העתק מתכון</button>
@@ -839,6 +878,22 @@ function wizBuildCopyText(bt,count,cityId,season,keep){
   const total=forBaking+keep;
   const r=sd.recRatio;
   const old=total/(1+2*r);
+  // Flour breakdown lines
+  const flourLines=bt.flours.map(f=>`  ${f.name}: ${Math.round(F*(f.pct/100))} גר' (${f.pct}%)`);
+
+  // Extras
+  const extraLines=(bt.extras||[]).map(e=>`  ${e.icon} ${e.name}: ${Math.round(F*(e.pct/100))} גר'`);
+
+  // Process steps
+  const processLines=bt.process.map((s,i)=>`  ${i+1}. ${s.t} — ${s.d}`);
+
+  // Instructions
+  const instLines=bt.inst.flatMap(ph=>[
+    ``,
+    `${ph.ph} (${ph.tm})`,
+    ...ph.st.map(s=>`  • ${s.t}${s.tip?' 💡 '+s.tip:''}`)
+  ]);
+
   return [
     `🍞 תוכנית אפייה — ${bt.emoji} ${bt.name}`,
     `📍 ${cityName} · ${sn.emoji} ${sn.name}`,
@@ -853,10 +908,18 @@ function wizBuildCopyText(bt,count,cityId,season,keep){
     `  ⏱ זמן תפיחה: ${sd.riseLow}–${sd.riseHigh} שעות`,
     ``,
     `🍞 מתכון ${bt.name} (${count} ${bt.unit})`,
-    `  קמח: ${Math.round(F)} גר'`,
-    `  מחמצת: ${Math.round(F*sp)} גר'`,
-    `  מים: ${Math.round(F*wp)} גר'`,
-    `  מלח: ${Math.round(F*saltp)} גר'`,
+    `  🌾 קמח סה"כ: ${Math.round(F)} גר'`,
+    ...flourLines,
+    `  🧫 מחמצת: ${Math.round(F*sp)} גר'`,
+    `  💧 מים: ${Math.round(F*wp)} גר'`,
+    `  🧂 מלח: ${Math.round(F*saltp)} גר'`,
+    ...extraLines,
+    ``,
+    `📋 שלבי הכנה`,
+    ...processLines,
+    ``,
+    `📖 הוראות מלאות`,
+    ...instLines,
     ``,
     `🔗 https://guyroginski-afk.github.io/sourdough`,
   ].join('\n');
@@ -894,7 +957,8 @@ function wizFinish(){
   setRatio(SEASON_DATA[season].recRatio);
   document.getElementById('s-loafct').value=wizState.count;
   document.getElementById('s-keep').value=wizState.keep;
-  selectBread(wizState.breadId);
+  // Set selectedBread silently without triggering UI
+  selectedBread=BT.find(b=>b.id===wizState.breadId);
   document.getElementById('b-loaves').value=wizState.count;
 
   // Hide wizard
@@ -903,7 +967,7 @@ function wizFinish(){
   ov.style.opacity='0';
   setTimeout(()=>{ov.style.display='none';},400);
 
-  // Show results overlay
+  // Show results overlay (no pre-calculation to avoid flash)
   setTimeout(()=>wzrShow(),450);
 }
 
@@ -965,6 +1029,51 @@ function wzrShow(){
       <span class="wzr-row-val">${r.val}</span>
     </div>`).join('');
 
+  // Flour breakdown
+  const flourHtml=bt.flours.map(f=>`
+    <div class="flour-bar-item">
+      <div class="flour-bar-label"><span>${f.name}</span><em>${Math.round(F*(f.pct/100))}ג'</em></div>
+      <div class="flour-bar-track"><div class="flour-bar-fill" style="width:${f.pct}%;background:${f.color}"></div></div>
+    </div>`).join('');
+  document.getElementById('wzr-flour-section').innerHTML=
+    `<div class="wzr-section-title" style="margin-top:14px">${bt.flours.length>1?'🌾 פירוט קמחים':'🌾 קמח'}</div>
+     <div class="wzr-card" style="padding:16px 20px">${flourHtml}</div>`;
+
+  // Process steps
+  const processHtml=bt.process.map((s,i)=>`
+    <div class="process-step">
+      <div class="ps-num">${i+1}</div>
+      <div><div class="ps-title">${s.t}</div><div class="ps-desc">${s.d}</div></div>
+    </div>`).join('');
+  document.getElementById('wzr-process-section').innerHTML=
+    `<div class="wzr-section-title" style="margin-top:14px">📋 שלבי הכנה</div>
+     <div class="wzr-card" style="padding:4px 0">${processHtml}</div>`;
+
+  // Instructions
+  const instHtml=bt.inst.map((ph,pi)=>`
+    <div class="inst-phase">
+      <div class="inst-phase-header" onclick="wzrTogglePhase(${pi})" id="wzr-phase-hdr-${pi}">
+        <div class="inst-phase-icon" style="background:${ph.cl}22;">${ph.ph.split(' ')[0]}</div>
+        <span class="inst-phase-title">${ph.ph.substring(ph.ph.indexOf(' ')+1)}</span>
+        <span class="inst-phase-time">${ph.tm}</span>
+        <span class="inst-phase-chevron" id="wzr-phase-chev-${pi}">▼</span>
+      </div>
+      <div class="inst-steps-list" id="wzr-phase-steps-${pi}">
+        ${ph.st.map(s=>`<div class="inst-step-item">
+          <div class="inst-step-dot"></div>
+          <div><div class="inst-step-text">${s.t}</div>${s.tip?`<div class="inst-tip">💡 ${s.tip}</div>`:''}</div>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+  document.getElementById('wzr-inst-section').innerHTML=
+    `<div style="margin-top:14px">
+      <div class="inst-header" onclick="wzrToggleInst()" style="border-radius:14px 14px 0 0;">
+        <h4 style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--wheat)">📖 הוראות הכנה מלאות</h4>
+        <span class="inst-toggle" id="wzr-inst-toggle">▼ פתח</span>
+      </div>
+      <div class="inst-body" id="wzr-inst-body">${instHtml}</div>
+    </div>`;
+
   document.getElementById('wiz-results-overlay').style.display='flex';
   document.getElementById('wiz-results-overlay').style.flexDirection='column';
   wzrSetTab('starter');
@@ -994,15 +1103,36 @@ function wzrCopy(){
 }
 
 function wzrGoFull(){
-  document.getElementById('wiz-results-overlay').style.display='none';
-  showTab('starter');
-  calcStarter();
-  selectBread(wizState.breadId);
-  document.getElementById('b-loaves').value=wizState.count;
-  calcBread();
-  showTab('starter');
+  const ov=document.getElementById('wiz-results-overlay');
+  ov.style.transition='opacity .3s ease';
+  ov.style.opacity='0';
+  setTimeout(()=>{
+    ov.style.display='none';
+    ov.style.opacity='1';
+    ov.style.transition='';
+    // Now calculate and show
+    showTab('starter');
+    calcStarter();
+    selectBread(wizState.breadId);
+    document.getElementById('b-loaves').value=wizState.count;
+    calcBread();
+    showTab('starter');
+  },300);
 }
 
+function wzrTogglePhase(idx){
+  const steps=document.getElementById(`wzr-phase-steps-${idx}`);
+  const chev=document.getElementById(`wzr-phase-chev-${idx}`);
+  const isOpen=steps.classList.toggle('open');
+  chev.style.transform=isOpen?'rotate(180deg)':'';
+}
+function wzrToggleInst(){
+  const body=document.getElementById('wzr-inst-body');
+  const label=document.getElementById('wzr-inst-toggle');
+  const isOpen=body.classList.toggle('open');
+  label.textContent=isOpen?'▲ סגור':'▼ פתח';
+  if(isOpen){wzrTogglePhase(0);}
+}
 function skipWizard(){
   const ov=document.getElementById('wizard-overlay');
   ov.style.transition='opacity .3s ease';
@@ -1013,6 +1143,188 @@ function skipWizard(){
 initWizard();
 
 init();
+
+// ═══ SOURDOUGH BOT ═══
+const BOT_SYSTEM = `אתה יועץ אפייה מומחה למחמצת. אתה עוזר למשתמשים של מחשבון לחם מחמצת שפותח על ידי גיא רוגינסקי — מייסד האתר ומפתח המחשבון.
+
+אתה יכול לעזור עם:
+1. ייעוץ כללי על אפייה במחמצת
+2. ניתוח תמונות מחמצת — האם היא בשיא? מה המצב?
+3. ניתוח תמונות לחם מוגמר (חצוי) — פירורית, קרום, פידבק
+4. שאלות על המתכונים במחשבון
+
+כשמנתח תמונת מחמצת: האם בשיא? רמת פעילות? המלצה: לאפות עכשיו / לחכות / להאכיל מחדש.
+כשמנתח תמונת לחם: פירורית, קרום, 2-3 טיפים קונקרטיים לפעם הבאה.
+
+אם אין תשובה — אמור: "לשאלה הזו כדאי לפנות לגיא רוגינסקי — מייסד האתר."
+דבר עברית, חמה וידידותית, קצר וממוקד.`;
+
+let botOpen = false;
+let botHistory = [];
+let botImageB64 = null;
+let botImagePreview = null;
+let botLoading = false;
+
+function botToggle(){
+  botOpen = !botOpen;
+  const win = document.getElementById('bot-window');
+  const fab = document.getElementById('bot-fab');
+  if(botOpen){
+    win.style.display='flex';
+    win.style.flexDirection='column';
+    fab.textContent='✕';
+    if(botHistory.length===0) botAddMessage('assistant','שלום! 👋 אני יועץ המחמצת שלך.\n\nאפשר לשאול אותי כל שאלה על אפייה, להעלות תמונת מחמצת לבדיקה, או תמונת לחם מוגמר לפידבק 🍞');
+    setTimeout(()=>document.getElementById('bot-textarea').focus(),100);
+  } else {
+    win.style.display='none';
+    fab.textContent='💬';
+  }
+}
+
+function botAddMessage(role, text, imgSrc){
+  botHistory.push({role, content: text});
+  const msgs = document.getElementById('bot-messages');
+  const div = document.createElement('div');
+  div.className = `bot-msg ${role==='user'?'user':'bot'}`;
+  let inner = '';
+  if(role==='bot'||role==='assistant'){
+    inner += `<div class="bot-avatar" style="width:28px;height:28px;font-size:.85rem;flex-shrink:0;">🍞</div>`;
+  }
+  inner += '<div>';
+  if(imgSrc) inner += `<img class="bot-msg-img" src="${imgSrc}" alt=""/>`;
+  if(text) inner += `<div class="bot-bubble">${text}</div>`;
+  inner += '</div>';
+  div.innerHTML = inner;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function botShowTyping(){
+  const msgs = document.getElementById('bot-messages');
+  const div = document.createElement('div');
+  div.className = 'bot-msg bot';
+  div.id = 'bot-typing-indicator';
+  div.innerHTML = `<div class="bot-avatar" style="width:28px;height:28px;font-size:.85rem;flex-shrink:0;">🍞</div><div class="bot-bubble bot-typing"><span></span><span></span><span></span></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function botHideTyping(){
+  const el = document.getElementById('bot-typing-indicator');
+  if(el) el.remove();
+}
+
+function botHandleImage(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    botImagePreview = ev.target.result;
+    botImageB64 = ev.target.result.split(',')[1];
+    document.getElementById('bot-img-thumb-img').src = botImagePreview;
+    document.getElementById('bot-img-preview').style.display = 'block';
+    botUpdateSendBtn();
+  };
+  reader.readAsDataURL(file);
+}
+
+function botClearImage(){
+  botImageB64 = null; botImagePreview = null;
+  document.getElementById('bot-img-preview').style.display='none';
+  document.getElementById('bot-file-input').value='';
+  botUpdateSendBtn();
+}
+
+function botUpdateSendBtn(){
+  const ta = document.getElementById('bot-textarea');
+  const btn = document.getElementById('bot-send-btn');
+  const hasContent = ta.value.trim() || botImageB64;
+  btn.className = 'bot-send ' + (hasContent && !botLoading ? 'ready' : 'idle');
+}
+
+function botKeyDown(e){
+  botUpdateSendBtn();
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();botSend();}
+}
+
+async function botSend(){
+  if(botLoading) return;
+  const ta = document.getElementById('bot-textarea');
+  const text = ta.value.trim();
+  if(!text && !botImageB64) return;
+
+  const imgSrc = botImagePreview;
+  const b64 = botImageB64;
+  botAddMessage('user', text, imgSrc);
+  ta.value='';
+  botClearImage();
+  botLoading=true;
+  botUpdateSendBtn();
+  botShowTyping();
+
+  try{
+    // Build API messages
+    const apiMsgs = [];
+    const hist = botHistory.slice(0,-1); // exclude the one we just added
+    hist.forEach(m=>{
+      if(m.role==='user'||m.role==='assistant')
+        apiMsgs.push({role:m.role==='user'?'user':'assistant',content:m.content||''});
+    });
+
+    // Current message
+    const content=[];
+    if(b64) content.push({type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}});
+    content.push({type:'text',text:text||(b64?'תנתח את התמונה הזו':'')});
+    apiMsgs.push({role:'user',content});
+
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:BOT_SYSTEM,
+        messages:apiMsgs
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.find(c=>c.type==='text')?.text||'משהו השתבש, נסה שוב.';
+    botHideTyping();
+    botAddMessage('assistant',reply);
+  }catch(e){
+    botHideTyping();
+    botAddMessage('assistant','שגיאה בחיבור. נסה שוב.');
+  }
+  botLoading=false;
+  botUpdateSendBtn();
+}
+
 </script>
+
+<!-- ═══ SOURDOUGH BOT ═══ -->
+<button id="bot-fab" onclick="botToggle()">🍞</button>
+<div id="bot-window" style="display:none;">
+  <div class="bot-header">
+    <div class="bot-avatar">🍞</div>
+    <div>
+      <div class="bot-name">יועץ המחמצת</div>
+      <div class="bot-status">מחובר</div>
+    </div>
+  </div>
+  <div class="bot-messages" id="bot-messages"></div>
+  <div id="bot-img-preview" style="display:none;" class="bot-img-preview">
+    <div class="bot-img-thumb">
+      <img id="bot-img-thumb-img" src="" alt=""/>
+      <button class="bot-img-remove" onclick="botClearImage()">✕</button>
+    </div>
+  </div>
+  <div class="bot-input-row">
+    <input type="file" accept="image/*" id="bot-file-input" style="display:none;" onchange="botHandleImage(event)"/>
+    <button class="bot-cam-btn" onclick="document.getElementById('bot-file-input').click()">📷</button>
+    <textarea class="bot-textarea" id="bot-textarea" rows="1" placeholder="שאל אותי כל שאלה על אפייה..." onkeydown="botKeyDown(event)"></textarea>
+    <button class="bot-send idle" id="bot-send-btn" onclick="botSend()">↑</button>
+  </div>
+</div>
+
 </body>
 </html>
