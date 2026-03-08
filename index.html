@@ -164,7 +164,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 /* ═══ SOURDOUGH BOT ═══ */
 #bot-fab{position:fixed;bottom:24px;left:24px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#C8913A,#7B4A1D);border:none;cursor:pointer;font-size:1.4rem;box-shadow:0 4px 20px rgba(200,145,58,.5);transition:transform .2s,box-shadow .2s;z-index:9999;display:flex;align-items:center;justify-content:center;}
 #bot-fab:hover{transform:scale(1.1);box-shadow:0 8px 28px rgba(200,145,58,.6);}
-#bot-window{position:fixed;bottom:88px;left:24px;width:320px;height:480px;background:linear-gradient(160deg,#1E0E04 0%,#2D1508 100%);border:1px solid rgba(200,145,58,.3);border-radius:20px;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.6);z-index:9998;overflow:hidden;animation:botPopIn .2s ease;}@media(max-width:480px){#bot-window{position:fixed;inset:0;bottom:0;left:0;right:0;top:0;width:100%;height:100%;border-radius:0;z-index:99999;}#bot-fab{z-index:100000;}}
+#bot-window{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);width:min(360px,96vw);height:min(520px,70vh);background:linear-gradient(160deg,#1E0E04 0%,#2D1508 100%);border:1px solid rgba(200,145,58,.3);border-radius:20px;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.6);z-index:9998;overflow:hidden;animation:botPopIn .2s ease;}
 @keyframes botPopIn{from{opacity:0;transform:scale(.92) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
 .bot-header{padding:12px 16px;border-bottom:1px solid rgba(247,237,216,.1);display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .bot-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#C8913A,#7B4A1D);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
@@ -1260,11 +1260,15 @@ function botToggle(){
     win.style.display='flex';
     win.style.flexDirection='column';
     fab.textContent='✕';
+    // Prevent iOS zoom
+    document.querySelector('meta[name=viewport]').content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no';
     if(botHistory.length===0) botAddMessage('assistant','שלום! 👋 אני יועץ המחמצת שלך.\n\n📷 טיפ: לחץ על כפתור המצלמה ושלח תמונה של המחמצת שלך — אני אגיד לך אם היא מוכנה לאפייה, או אנתח תמונת לחם מוגמר ואתן פידבק.\n\nאפשר גם פשוט לשאול כל שאלה על אפייה!');
     setTimeout(()=>document.getElementById('bot-textarea').focus(),100);
   } else {
     win.style.display='none';
     fab.textContent='💬';
+    // Restore zoom ability
+    document.querySelector('meta[name=viewport]').content='width=device-width,initial-scale=1';
   }
 }
 
