@@ -89,6 +89,16 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 .tips-card li{font-size:.77rem;color:#445830;display:flex;gap:8px;line-height:1.45;}
 .tips-card li::before{content:'→';color:var(--moss);flex-shrink:0;font-weight:700;}
 .hidden{display:none!important;}
+.bt-check{position:absolute;top:6px;right:7px;width:18px;height:18px;border-radius:50%;background:var(--crust);color:white;font-size:.65rem;display:none;align-items:center;justify-content:center;font-weight:800;}
+.bread-type-btn.active .bt-check{display:flex;}
+.wiz-bread-btn.active .bt-check{display:flex;}
+.bread-count-row{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--border);}
+.bread-count-row:last-child{border-bottom:none;}
+.bcr-stepper{display:flex;align-items:center;gap:6px;}
+.bcr-btn{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--border);background:white;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--crust);transition:all .15s;}
+.bcr-btn:hover{border-color:var(--wheat);color:var(--wheat);}
+.bcr-num{font-family:'IBM Plex Mono',monospace;font-size:.95rem;font-weight:600;min-width:22px;text-align:center;color:var(--dark);}
+.bcr-unit{font-size:.62rem;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;}
 .anim{animation:fadeUp .4s ease;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 .bread-types-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;}
@@ -316,7 +326,7 @@ body:has(#wiz-results-overlay[style*="display:flex"]) { overflow: hidden !import
     <!-- Step 1: bread type -->
     <div class="wiz-step active" id="wstep-0">
       <div class="wiz-q">מה תאפה היום?</div>
-      <div class="wiz-sub">בחר סוג לחם אחד</div>
+      <div class="wiz-sub">ניתן לבחור יותר מאחד</div>
       <div class="wiz-bread-grid" id="wiz-bread-grid"></div>
       <div class="wiz-nav">
         <button class="wiz-next" id="wiz-next-0" onclick="wizNext(1)">הבא</button>
@@ -325,16 +335,9 @@ body:has(#wiz-results-overlay[style*="display:flex"]) { overflow: hidden !import
 
     <!-- Step 2: count -->
     <div class="wiz-step" id="wstep-1">
-      <div class="wiz-q">כמה <span id="wiz-count-unit-label">כיכרות</span>?</div>
+      <div class="wiz-q">כמה מכל סוג?</div>
       <div class="wiz-sub">המחשבון יחשב את הכמויות המדויקות</div>
-      <div class="wiz-count-row">
-        <button class="wiz-count-btn" onclick="wizCountChange(-1)">−</button>
-        <div>
-          <div class="wiz-count-num" id="wiz-count-num">2</div>
-          <div class="wiz-count-unit" id="wiz-count-unit-sub"></div>
-        </div>
-        <button class="wiz-count-btn" onclick="wizCountChange(1)">+</button>
-      </div>
+      <div id="wiz-bread-counts" style="margin:8px 0 24px;"></div>
       <div class="wiz-nav">
         <button class="wiz-back" onclick="wizNext(0)">חזור</button>
         <button class="wiz-next ready" onclick="wizNext(2)">הבא</button>
@@ -533,32 +536,10 @@ body:has(#wiz-results-overlay[style*="display:flex"]) { overflow: hidden !import
   </div>
   <div class="card">
     <div class="card-title">⚖️ כמויות</div>
-    <div id="unit-note" class="unit-note hidden"></div>
-    <div class="input-row">
-      <div class="input-group">
-        <label id="count-label">מספר כיכרות</label>
-        <div class="sub">&nbsp;</div>
-        <div class="input-wrap"><input type="number" id="b-loaves" value="2" min="1" max="30"/><span class="input-unit">יח'</span></div>
-      </div>
-    </div>
+    <div id="bread-counts-list"><div style="font-size:.82rem;color:var(--text-muted);text-align:center;padding:12px 0;">בחר סוג לחם למעלה</div></div>
     <button class="calc-btn" onclick="calcBread()">🍞 חשב מתכון</button>
   </div>
-  <div id="bread-results" class="hidden">
-    <div class="bread-result-card">
-      <div class="brc-header"><h3 id="br-title">מתכון לחם</h3><span class="brc-loaves" id="br-sub"></span></div>
-      <div id="br-ingredients"></div>
-    </div>
-    <button id="wiz-copy-btn" class="wiz-copy-btn" onclick="wizCopyRecipe()">📋 העתק מתכון</button>
-    <div class="flour-breakdown"><h4 id="br-flour-title">🌾 קמח</h4><div id="br-flour-bars"></div></div>
-    <div class="process-tips"><h4>📋 סיכום שלבים</h4><div id="br-process-steps"></div></div>
-    <div class="instructions-card">
-      <div class="inst-header" onclick="toggleInstructions()">
-        <h4>📖 הוראות הכנה מלאות</h4>
-        <span class="inst-toggle" id="inst-toggle-label">▼ פתח</span>
-      </div>
-      <div class="inst-body" id="inst-body"><div id="inst-phases"></div></div>
-    </div>
-  </div>
+  <div id="bread-results" class="hidden"></div>
 </div>
 
 <footer>🍞 מחשבון לחם מחמצת</footer>
@@ -650,12 +631,13 @@ const BT=[
   inst:[{ph:'🌊 ערבוב והשרייה',tm:'45 דקות',cl:'#F0D060',st:[{t:'ערבב קמח עם <strong>90%</strong> מהמים, נוח <strong>30 דקות</strong>'},{t:'הוסף מחמצת, מלח + שאר מים',tip:'הבצק דביק מאוד — לא לוש!'}]},{ph:'🔬 תסיסה + קיפול סלילי',tm:'4–5 שעות',cl:'#7B9E45',st:[{t:'קיפול סלילי: הרם מהמרכז, סובב 90°, חזור 4 פעמים'},{t:'חזור <strong>כל 30 דקות, 4 פעמים</strong>'}]},{ph:'🫒 יציקה ושקעים',tm:'70 דקות',cl:'#C8913A',st:[{t:'<strong>4–5 כפות שמן זית</strong> לתבנית'},{t:'נוח <strong>45–60 דקות</strong>'},{t:'<strong>שקעים!</strong> אצבעות עמוק לכל שטח',tip:"שקעים עמוקים = פוקאצ'ה טובה!"}]},{ph:'🔥 אפייה',tm:'25–30 דקות',cl:'#BD4228',st:[{t:'חמם <strong>220°</strong>'},{t:'<strong>25–30 דקות</strong> עד זהוב-כהה'},{t:'מיד: <strong>שמן זית גולמי נוסף!</strong>'}]}]}
 ];
 
-let currentSeason='spring',currentRatio=3,selectedBread=null,currentCity='tlv';
+let currentSeason='spring',currentRatio=3,selectedBreads={},currentCity='tlv';
 
 function init(){
   document.getElementById('breadTypesGrid').innerHTML=BT.map(bt=>`
     <div class="bread-type-btn" data-id="${bt.id}" onclick="selectBread('${bt.id}')">
       <span class="bt-hbadge">${bt.badge}</span>
+      <span class="bt-check">✓</span>
       <span class="bt-emoji">${bt.svgIcon ? bt.svgIcon : bt.emoji}</span>
       <div class="bt-name">${bt.name}</div>
       <div class="bt-desc">${bt.desc}</div>
@@ -734,92 +716,188 @@ function calcStarter(){
 }
 
 function selectBread(id){
-  selectedBread=BT.find(b=>b.id===id);
-  document.querySelectorAll('.bread-type-btn').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
-  const banner=document.getElementById('breadInfoBanner');
-  banner.classList.remove('hidden');
-  banner.innerHTML=`<div class="bi-main">
-    <h4>${selectedBread.emoji} ${selectedBread.name}</h4>
-    <p>${selectedBread.info}</p>
-    <div class="bi-badges">
-      <span class="bi-badge">💧 ${selectedBread.hydration}% לחות</span>
-      <span class="tooltip-wrap" style="margin-right:4px;">
-        <span class="tooltip-icon" style="font-size:.6rem;">?</span>
-        <span class="tooltip-box">אחוז הידרציה = כמות המים ביחס לקמח. 70% = 700 גרם מים לכל ק"ג קמח. ככל שגבוה יותר — הבצק נוזלי ופתוח יותר, אבל קשה יותר לעיצוב.</span>
-      </span>
-      <span class="bi-badge">🧫 ${selectedBread.starter}% מחמצת</span>
-      <span class="bi-badge">🧂 ${selectedBread.salt}% מלח</span>
-      ${(selectedBread.extras||[]).map(e=>`<span class="bi-badge">${e.icon} ${e.name} ${e.pct}%</span>`).join('')}
-      ${selectedBread.tags.map(t=>`<span class="bi-badge">${t}</span>`).join('')}
-    </div></div>`;
-  document.getElementById('count-label').textContent=`מספר ${selectedBread.unit}`;
-  document.getElementById('b-loaves').value=selectedBread.defCount;
-  const note=document.getElementById('unit-note');
-  selectedBread.unitNote?(note.textContent=selectedBread.unitNote,note.classList.remove('hidden')):note.classList.add('hidden');
+  if(selectedBreads[id]) delete selectedBreads[id];
+  else selectedBreads[id]=BT.find(b=>b.id===id).defCount;
+  document.querySelectorAll('.bread-type-btn').forEach(b=>b.classList.toggle('active',!!selectedBreads[b.dataset.id]));
+  updateBreadInfoBanner();
+  updateBreadCountsUI();
   document.getElementById('bread-results').classList.add('hidden');
 }
 
-function calcBread(){
-  if(!selectedBread){alert('בחר סוג לחם קודם!');return;}
-  const count=parseInt(document.getElementById('b-loaves').value)||selectedBread.defCount;
-  const bt=selectedBread,td=(bt.defWt/bt.loss)*count;
-  const sp=bt.starter/100,wp=bt.hydration/100,saltp=bt.salt/100;
-  const F=td/(1+wp+sp+saltp),S=F*sp,W=F*wp,SALT=F*saltp;
-  document.getElementById('br-title').textContent=`${bt.emoji} ${bt.name}`;
-  document.getElementById('br-sub').textContent=`${count} ${bt.unit}`;
-  document.getElementById('br-ingredients').innerHTML=[
-    {icon:'🌾',name:'קמח סה"כ',sub:bt.flours.map(f=>f.name).join(' + '),g:F,pct:100},
-    {icon:'🧫',name:'מחמצת',sub:'בשיא הפעילות',g:S,pct:bt.starter},
-    {icon:'💧',name:'מים',sub:'טמפרטורת חדר',g:W,pct:bt.hydration},
-    {icon:'🧂',name:'מלח',sub:'ים / קושר',g:SALT,pct:bt.salt},
-    ...(bt.extras||[]).map(e=>({icon:e.icon,name:e.name,sub:'',g:F*(e.pct/100),pct:e.pct}))
-  ].map(ing=>`<div class="ingredient-row">
-    <span class="ing-icon">${ing.icon}</span>
-    <div style="flex:1"><div class="ing-name">${ing.name}</div><div class="ing-sub">${ing.sub}</div></div>
-    <span class="ing-pct">${ing.pct}%</span>
-    <div style="text-align:left"><span class="ing-unit">גר'</span><span class="ing-amount">${Math.round(ing.g)}</span></div>
-  </div>`).join('');
-  document.getElementById('br-flour-title').textContent=bt.flours.length>1?'🌾 פירוט קמחים':'🌾 קמח';
-  document.getElementById('br-flour-bars').innerHTML=bt.flours.map(f=>`
-    <div class="flour-bar-item">
-      <div class="flour-bar-label"><span>${f.name}</span><em>${Math.round(F*(f.pct/100))}ג'</em></div>
-      <div class="flour-bar-track"><div class="flour-bar-fill" style="width:${f.pct}%;background:${f.color}"></div></div>
-    </div>`).join('');
-  document.getElementById('br-process-steps').innerHTML=bt.process.map((s,i)=>`
-    <div class="process-step"><div class="ps-num">${i+1}</div>
-    <div><div class="ps-title">${s.t}</div><div class="ps-desc">${s.d}</div></div></div>`).join('');
-  document.getElementById('inst-phases').innerHTML=bt.inst.map((ph,pi)=>`
-    <div class="inst-phase">
-      <div class="inst-phase-header" onclick="togglePhase(${pi})" id="phase-hdr-${pi}">
-        <div class="inst-phase-icon" style="background:${ph.cl}22;">${ph.ph.split(' ')[0]}</div>
-        <span class="inst-phase-title">${ph.ph.substring(ph.ph.indexOf(' ')+1)}</span>
-        <span class="inst-phase-time">${ph.tm}</span>
-        <span class="inst-phase-chevron" id="phase-chev-${pi}">▼</span>
+function updateBreadInfoBanner(){
+  const ids=Object.keys(selectedBreads);
+  const banner=document.getElementById('breadInfoBanner');
+  if(!ids.length){banner.classList.add('hidden');return;}
+  banner.classList.remove('hidden');
+  if(ids.length===1){
+    const bt=BT.find(b=>b.id===ids[0]);
+    banner.innerHTML=`<div class="bi-main">
+      <h4>${bt.emoji} ${bt.name}</h4>
+      <p>${bt.info}</p>
+      <div class="bi-badges">
+        <span class="bi-badge">💧 ${bt.hydration}% לחות</span>
+        <span class="tooltip-wrap" style="margin-right:4px;"><span class="tooltip-icon" style="font-size:.6rem;">?</span><span class="tooltip-box">אחוז הידרציה = כמות המים ביחס לקמח. 70% = 700 גרם מים לכל ק"ג קמח. ככל שגבוה יותר — הבצק נוזלי ופתוח יותר, אבל קשה יותר לעיצוב.</span></span>
+        <span class="bi-badge">🧫 ${bt.starter}% מחמצת</span>
+        <span class="bi-badge">🧂 ${bt.salt}% מלח</span>
+        ${(bt.extras||[]).map(e=>`<span class="bi-badge">${e.icon} ${e.name} ${e.pct}%</span>`).join('')}
+        ${bt.tags.map(t=>`<span class="bi-badge">${t}</span>`).join('')}
+      </div></div>`;
+  } else {
+    banner.innerHTML=`<div class="bi-main">
+      <h4>🍞 ${ids.length} סוגי לחם נבחרו</h4>
+      <div class="bi-badges">${ids.map(id=>{const bt=BT.find(b=>b.id===id);return`<span class="bi-badge">${bt.emoji} ${bt.name}</span>`;}).join('')}</div>
+    </div>`;
+  }
+}
+
+function setBreadCount(id,count){
+  count=Math.max(1,Math.min(30,count));
+  selectedBreads[id]=count;
+  updateBreadCountsUI();
+}
+
+function updateBreadCountsUI(){
+  const ids=Object.keys(selectedBreads);
+  const el=document.getElementById('bread-counts-list');
+  if(!ids.length){el.innerHTML='<div style="font-size:.82rem;color:var(--text-muted);text-align:center;padding:12px 0;">בחר סוג לחם למעלה</div>';return;}
+  el.innerHTML=ids.map(id=>{
+    const bt=BT.find(b=>b.id===id);
+    const count=selectedBreads[id];
+    return`<div class="bread-count-row">
+      <span style="font-size:1.1rem;">${bt.emoji}</span>
+      <div style="flex:1">
+        <div style="font-size:.85rem;font-weight:700;color:var(--dark);">${bt.name}</div>
+        ${bt.unitNote?`<div style="font-size:.63rem;color:var(--text-muted);line-height:1.3;margin-top:2px;">${bt.unitNote}</div>`:''}
       </div>
-      <div class="inst-steps-list" id="phase-steps-${pi}">
-        ${ph.st.map(s=>`<div class="inst-step-item">
-          <div class="inst-step-dot"></div>
-          <div><div class="inst-step-text">${s.t}</div>${s.tip?`<div class="inst-tip">💡 ${s.tip}</div>`:''}</div>
+      <div class="bcr-stepper">
+        <button class="bcr-btn" onclick="setBreadCount('${id}',${count-1})">−</button>
+        <span class="bcr-num">${count}</span>
+        <span class="bcr-unit">${bt.unit}</span>
+        <button class="bcr-btn" onclick="setBreadCount('${id}',${count+1})">+</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function calcBread(){
+  const ids=Object.keys(selectedBreads);
+  if(!ids.length){alert('בחר סוג לחם קודם!');return;}
+  const results=ids.map(id=>{
+    const bt=BT.find(b=>b.id===id),count=selectedBreads[id];
+    const td=(bt.defWt/bt.loss)*count;
+    const sp=bt.starter/100,wp=bt.hydration/100,saltp=bt.salt/100;
+    const F=td/(1+wp+sp+saltp),S=F*sp,W=F*wp,SALT=F*saltp;
+    return{bt,count,F,S,W,SALT};
+  });
+  let html='';
+  if(results.length>1){
+    const tF=results.reduce((a,r)=>a+r.F,0),tS=results.reduce((a,r)=>a+r.S,0);
+    const tW=results.reduce((a,r)=>a+r.W,0),tSalt=results.reduce((a,r)=>a+r.SALT,0);
+    html+=`<div class="result-banner" style="margin-bottom:14px;">
+      <h3>📊 סה"כ לכל הלחמים</h3>
+      <div class="nums-grid" style="grid-template-columns:repeat(2,1fr);">
+        <div class="num-box"><span class="v">${Math.round(tF)}</span><span class="u">גר'</span><span class="l">קמח כולל</span></div>
+        <div class="num-box"><span class="v">${Math.round(tS)}</span><span class="u">גר'</span><span class="l">מחמצת כולל</span></div>
+        <div class="num-box"><span class="v">${Math.round(tW)}</span><span class="u">גר'</span><span class="l">מים כולל</span></div>
+        <div class="num-box"><span class="v">${Math.round(tSalt)}</span><span class="u">גר'</span><span class="l">מלח כולל</span></div>
+      </div>
+    </div>`;
+  }
+  results.forEach(({bt,count,F,S,W,SALT})=>{
+    const ings=[
+      {icon:'🌾',name:'קמח סה"כ',sub:bt.flours.map(f=>f.name).join(' + '),g:F,pct:100},
+      {icon:'🧫',name:'מחמצת',sub:'בשיא הפעילות',g:S,pct:bt.starter},
+      {icon:'💧',name:'מים',sub:'טמפרטורת חדר',g:W,pct:bt.hydration},
+      {icon:'🧂',name:'מלח',sub:'ים / קושר',g:SALT,pct:bt.salt},
+      ...(bt.extras||[]).map(e=>({icon:e.icon,name:e.name,sub:'',g:F*(e.pct/100),pct:e.pct}))
+    ];
+    html+=`<div class="bread-result-card">
+      <div class="brc-header"><h3 class="brc-title">${bt.emoji} ${bt.name}</h3><span class="brc-loaves">${count} ${bt.unit}</span></div>
+      <div>${ings.map(ing=>`<div class="ingredient-row">
+        <span class="ing-icon">${ing.icon}</span>
+        <div style="flex:1"><div class="ing-name">${ing.name}</div><div class="ing-sub">${ing.sub}</div></div>
+        <span class="ing-pct">${ing.pct}%</span>
+        <div style="text-align:left"><span class="ing-unit">גר'</span><span class="ing-amount">${Math.round(ing.g)}</span></div>
+      </div>`).join('')}</div>
+    </div>
+    <div class="flour-breakdown">
+      <h4>${bt.flours.length>1?'🌾 פירוט קמחים':'🌾 קמח'}${results.length>1?' — '+bt.name:''}</h4>
+      ${bt.flours.map(f=>`<div class="flour-bar-item">
+        <div class="flour-bar-label"><span>${f.name}</span><em>${Math.round(F*(f.pct/100))}ג'</em></div>
+        <div class="flour-bar-track"><div class="flour-bar-fill" style="width:${f.pct}%;background:${f.color}"></div></div>
+      </div>`).join('')}
+    </div>
+    <div class="process-tips">
+      <h4>📋 סיכום שלבים${results.length>1?' — '+bt.name:''}</h4>
+      ${bt.process.map((s,i)=>`<div class="process-step"><div class="ps-num">${i+1}</div>
+        <div><div class="ps-title">${s.t}</div><div class="ps-desc">${s.d}</div></div></div>`).join('')}
+    </div>
+    <div class="instructions-card">
+      <div class="inst-header" onclick="toggleInstructionsById('${bt.id}')">
+        <h4>📖 הוראות הכנה${results.length>1?' — '+bt.name:''}</h4>
+        <span class="inst-toggle" id="inst-toggle-${bt.id}">▼ פתח</span>
+      </div>
+      <div class="inst-body" id="inst-body-${bt.id}">
+        ${bt.inst.map((ph,pi)=>`<div class="inst-phase">
+          <div class="inst-phase-header" onclick="togglePhaseById('${bt.id}',${pi})" id="phase-hdr-${bt.id}-${pi}">
+            <div class="inst-phase-icon" style="background:${ph.cl}22;">${ph.ph.split(' ')[0]}</div>
+            <span class="inst-phase-title">${ph.ph.substring(ph.ph.indexOf(' ')+1)}</span>
+            <span class="inst-phase-time">${ph.tm}</span>
+            <span class="inst-phase-chevron" id="phase-chev-${bt.id}-${pi}">▼</span>
+          </div>
+          <div class="inst-steps-list" id="phase-steps-${bt.id}-${pi}">
+            ${ph.st.map(s=>`<div class="inst-step-item">
+              <div class="inst-step-dot"></div>
+              <div><div class="inst-step-text">${s.t}</div>${s.tip?`<div class="inst-tip">💡 ${s.tip}</div>`:''}</div>
+            </div>`).join('')}
+          </div>
         </div>`).join('')}
       </div>
-    </div>`).join('');
+    </div>`;
+  });
+  html+=`<button class="wiz-copy-btn" onclick="copyMultiRecipe()" style="margin-top:4px;">📋 העתק מתכון</button>`;
   const res=document.getElementById('bread-results');
+  res.innerHTML=html;
   res.classList.remove('hidden');res.classList.add('anim');
-  document.getElementById('inst-body').classList.remove('open');
-  document.getElementById('inst-toggle-label').textContent='▼ פתח';
   setTimeout(()=>res.scrollIntoView({behavior:'smooth',block:'start'}),100);
 }
-function toggleInstructions(){
-  const body=document.getElementById('inst-body'),label=document.getElementById('inst-toggle-label');
+function toggleInstructionsById(breadId){
+  const body=document.getElementById(`inst-body-${breadId}`),label=document.getElementById(`inst-toggle-${breadId}`);
   const isOpen=body.classList.toggle('open');
   label.textContent=isOpen?'▲ סגור':'▼ פתח';
-  if(isOpen){const h=document.getElementById('phase-hdr-0');if(h&&!h.classList.contains('open'))togglePhase(0);}
+  if(isOpen) togglePhaseById(breadId,0);
 }
-function togglePhase(idx){
-  const hdr=document.getElementById(`phase-hdr-${idx}`),steps=document.getElementById(`phase-steps-${idx}`),chev=document.getElementById(`phase-chev-${idx}`);
+function togglePhaseById(breadId,idx){
+  const steps=document.getElementById(`phase-steps-${breadId}-${idx}`),chev=document.getElementById(`phase-chev-${breadId}-${idx}`);
   const isOpen=steps.classList.toggle('open');
-  hdr.classList.toggle('open',isOpen);
   chev.style.transform=isOpen?'rotate(180deg)':'';
+}
+function copyMultiRecipe(){
+  const ids=Object.keys(selectedBreads);
+  if(!ids.length) return;
+  let text='🍞 מתכוני לחם מחמצת\n\n';
+  ids.forEach(id=>{
+    const bt=BT.find(b=>b.id===id),count=selectedBreads[id];
+    const td=(bt.defWt/bt.loss)*count;
+    const sp=bt.starter/100,wp=bt.hydration/100,saltp=bt.salt/100;
+    const F=td/(1+wp+sp+saltp);
+    text+=`${bt.emoji} ${bt.name} — ${count} ${bt.unit}\n`;
+    text+=`קמח: ${Math.round(F)} גר'\n`;
+    text+=`מחמצת: ${Math.round(F*sp)} גר'\n`;
+    text+=`מים: ${Math.round(F*wp)} גר'\n`;
+    text+=`מלח: ${Math.round(F*saltp)} גר'\n`;
+    (bt.extras||[]).forEach(e=>text+=`${e.name}: ${Math.round(F*(e.pct/100))} גר'\n`);
+    text+='\n';
+  });
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.focus();ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    const btn=document.querySelector('[onclick="copyMultiRecipe()"]');
+    if(btn){btn.textContent='✅ הועתק!';btn.style.color='#8BC46A';btn.style.borderColor='#5A7138';btn.style.background='rgba(90,113,56,.15)';
+    setTimeout(()=>{btn.textContent='📋 העתק מתכון';btn.style.color='';btn.style.borderColor='';btn.style.background='';},2500);}
+  }catch(e){}
 }
 
 // ═══ WIZARD ═══
@@ -834,7 +912,7 @@ const CITY_LIST=[
 
 const SEASON_NAMES={winter:{name:'חורף',emoji:'🌧️'},spring:{name:'אביב',emoji:'🌸'},summer:{name:'קיץ',emoji:'☀️'},autumn:{name:'סתיו',emoji:'🍂'}};
 
-let wizState={breadId:null,count:2,city:null,season:null,keep:50};
+let wizState={breadIds:[],breadCounts:{},city:null,season:null,keep:50};
 
 function getSeasonFromDate(){
   const m=new Date().getMonth()+1;
@@ -864,7 +942,8 @@ function initWizard(){
 
   // Bread grid
   document.getElementById('wiz-bread-grid').innerHTML=BT.map(bt=>`
-    <div class="wiz-bread-btn" data-id="${bt.id}" onclick="wizSelectBread('${bt.id}')">
+    <div class="wiz-bread-btn" data-id="${bt.id}" onclick="wizToggleBread('${bt.id}')">
+      <span class="bt-check">✓</span>
       <span class="bt-emoji">${bt.svgIcon ? bt.svgIcon : bt.emoji}</span>
       <div class="bt-name">${bt.name}</div>
       <div class="bt-desc">${bt.desc}</div>
@@ -876,15 +955,35 @@ function initWizard(){
   `).join('');
 }
 
-function wizSelectBread(id){
-  wizState.breadId=id;
-  document.querySelectorAll('.wiz-bread-btn').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
-  document.getElementById('wiz-next-0').classList.add('ready');
-  const bt=BT.find(b=>b.id===id);
-  wizState.count=1;
-  document.getElementById('wiz-count-unit-label').textContent=bt.unit;
-  document.getElementById('wiz-count-unit-sub').textContent=bt.unit;
-  document.getElementById('wiz-count-num').textContent=bt.defCount;
+function wizToggleBread(id){
+  const idx=wizState.breadIds.indexOf(id);
+  if(idx>=0){wizState.breadIds.splice(idx,1);delete wizState.breadCounts[id];}
+  else{const bt=BT.find(b=>b.id===id);wizState.breadIds.push(id);wizState.breadCounts[id]=bt.defCount;}
+  document.querySelectorAll('.wiz-bread-btn').forEach(b=>b.classList.toggle('active',wizState.breadIds.includes(b.dataset.id)));
+  document.getElementById('wiz-next-0').classList.toggle('ready',wizState.breadIds.length>0);
+}
+
+function renderWizCounts(){
+  const el=document.getElementById('wiz-bread-counts');
+  el.innerHTML=wizState.breadIds.map(id=>{
+    const bt=BT.find(b=>b.id===id),count=wizState.breadCounts[id];
+    return`<div class="bread-count-row" style="border-color:rgba(247,237,216,.12);">
+      <span style="font-size:1.1rem;">${bt.emoji}</span>
+      <div style="flex:1"><div style="font-size:.85rem;font-weight:700;color:var(--cream);">${bt.name}</div></div>
+      <div class="bcr-stepper">
+        <button class="bcr-btn" style="border-color:rgba(200,145,58,.4);background:rgba(255,255,255,.06);color:#C8913A;" onclick="wizSetCount('${id}',${count-1})">−</button>
+        <span class="bcr-num" id="wiz-bcr-num-${id}" style="color:var(--cream);">${count}</span>
+        <span class="bcr-unit" style="color:rgba(247,237,216,.4);">${bt.unit}</span>
+        <button class="bcr-btn" style="border-color:rgba(200,145,58,.4);background:rgba(255,255,255,.06);color:#C8913A;" onclick="wizSetCount('${id}',${count+1})">+</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function wizSetCount(id,count){
+  count=Math.max(1,Math.min(20,count));
+  wizState.breadCounts[id]=count;
+  document.getElementById(`wiz-bcr-num-${id}`).textContent=count;
 }
 
 function wizCountChange(delta){
@@ -903,6 +1002,7 @@ function wizNext(step){
     d.classList.toggle('done',i<step);
     d.classList.toggle('active',i===step);
   });
+  if(step===1) renderWizCounts();
   if(step===2&&wizState.city) document.getElementById('wiz-next-2').classList.add('ready');
 }
 
@@ -952,11 +1052,14 @@ function wizBuildCopyText(bt,count,cityId,season,keep){
   // Process steps
   const processLines=bt.process.map((s,i)=>`  ${i+1}. ${s.t} — ${s.d}`);
 
+  // Strip HTML tags helper
+  const strip=s=>s.replace(/<[^>]*>/g,'');
+
   // Instructions
   const instLines=bt.inst.flatMap(ph=>[
     ``,
     `${ph.ph} (${ph.tm})`,
-    ...ph.st.map(s=>`  • ${s.t}${s.tip?' 💡 '+s.tip:''}`)
+    ...ph.st.map(s=>`  • ${strip(s.t)}${s.tip?' 💡 '+strip(s.tip):''}`)
   ]);
 
   return [
@@ -986,7 +1089,7 @@ function wizBuildCopyText(bt,count,cityId,season,keep){
     `📖 הוראות מלאות`,
     ...instLines,
     ``,
-    `🔗 https://guyroginski-afk.github.io/sourdough`,
+    `🔗 https://mahametzet.com`,
   ].join('\n');
 }
 
@@ -1008,14 +1111,13 @@ function wizCopyRecipe(){
 }
 
 function wizFinish(){
-  if(!wizState.city)return;
+  if(!wizState.city||!wizState.breadIds.length)return;
   const season=wizState.season||getSeasonFromDate();
   wizState.season=season;
 
   // Apply to main calculator silently IN BACKGROUND
   currentCity=wizState.city;
   currentSeason=season;
-  selectedBread=BT.find(b=>b.id===wizState.breadId);
 
   // Hide wizard overlay immediately
   const ov=document.getElementById('wizard-overlay');
@@ -1026,107 +1128,105 @@ function wizFinish(){
 }
 
 function wzrShow(){
-  const bt=BT.find(b=>b.id===wizState.breadId);
-  if(!bt)return;
+  if(!wizState.breadIds.length)return;
   const season=wizState.season;
   const sd=SEASON_DATA[season];
   const cityName=CITIES[wizState.city]?.name||wizState.city;
   const sn={winter:'חורף 🌧️',spring:'אביב 🌸',summer:'קיץ ☀️',autumn:'סתיו 🍂'}[season];
-  const count=wizState.count,keep=wizState.keep;
-
-  // Calc bread
-  const td=(bt.defWt/bt.loss)*count;
-  const sp=bt.starter/100,wp=bt.hydration/100,saltp=bt.salt/100;
-  const F=td/(1+wp+sp+saltp);
-
-  // Calc starter
-  const forBaking=F*sp;
-  const total=forBaking+keep;
+  const keep=wizState.keep;
   const r=sd.recRatio;
+
+  // Compute per-bread
+  const calcs=wizState.breadIds.map(id=>{
+    const bt=BT.find(b=>b.id===id),count=wizState.breadCounts[id];
+    const td=(bt.defWt/bt.loss)*count;
+    const sp=bt.starter/100,wp=bt.hydration/100,saltp=bt.salt/100;
+    const F=td/(1+wp+sp+saltp),S=F*sp,W=F*wp,SALT=F*saltp;
+    return{bt,count,F,S,W,SALT,sp,wp,saltp};
+  });
+  const totalStarter=calcs.reduce((a,c)=>a+c.S,0);
+  const total=totalStarter+keep;
   const oldStarter=total/(1+2*r);
 
   // Meta
-  document.getElementById('wzr-meta').textContent=`${bt.emoji} ${bt.name} · ${count} ${bt.unit} · ${cityName} · ${sn}`;
+  document.getElementById('wzr-meta').textContent=`${calcs.map(c=>`${c.bt.emoji} ${c.bt.name}`).join(', ')} · ${cityName} · ${sn}`;
 
   // Starter rows
-  const sRows=[
-    {icon:'🫙',label:'מחמצת קיימת לשקול',val:Math.round(oldStarter)},
-    {icon:'🌾',label:'קמח להוסיף',val:Math.round(oldStarter*r)},
-    {icon:'💧',label:'מים להוסיף',val:Math.round(oldStarter*r)},
-    {icon:'📦',label:'סה"כ אחרי האכלה',val:Math.round(total)},
-    {icon:'🍞',label:`לאפייה (${count} יח')`,val:Math.round(forBaking)},
-    {icon:'🧊',label:'נשאר לפעם הבאה',val:keep},
-  ];
-  document.getElementById('wzr-starter-rows').innerHTML=sRows.map(r=>`
-    <div class="wzr-row">
-      <span class="wzr-row-icon">${r.icon}</span>
-      <span class="wzr-row-label">${r.label}</span>
-      <span class="wzr-row-unit">גר'</span>
-      <span class="wzr-row-val">${r.val}</span>
-    </div>`).join('');
+  const makeRow=(icon,label,val)=>`<div class="wzr-row"><span class="wzr-row-icon">${icon}</span><span class="wzr-row-label">${label}</span><span class="wzr-row-unit">גר'</span><span class="wzr-row-val">${val}</span></div>`;
+  document.getElementById('wzr-starter-rows').innerHTML=[
+    makeRow('🫙','מחמצת קיימת לשקול',Math.round(oldStarter)),
+    makeRow('🌾','קמח להוסיף',Math.round(oldStarter*r)),
+    makeRow('💧','מים להוסיף',Math.round(oldStarter*r)),
+    makeRow('📦','סה"כ אחרי האכלה',Math.round(total)),
+    makeRow('🍞','לאפייה (כל הלחמים)',Math.round(totalStarter)),
+    makeRow('🧊','נשאר לפעם הבאה',keep),
+  ].join('');
   document.getElementById('wzr-starter-info').innerHTML=
     `⏱ זמן תפיחה: <span style="color:#C8913A">${sd.riseLow}–${sd.riseHigh} שעות</span><br>🔄 יחס מומלץ: <span style="color:#C8913A">1:${r}:${r}</span>`;
 
-  // Bread rows
-  const bRows=[
-    {icon:'🌾',label:'קמח סה"כ',val:Math.round(F)},
-    {icon:'🧫',label:'מחמצת',val:Math.round(F*sp)},
-    {icon:'💧',label:'מים',val:Math.round(F*wp)},
-    {icon:'🧂',label:'מלח',val:Math.round(F*saltp)},
-  ];
-  document.getElementById('wzr-bread-title').textContent=`${bt.emoji} ${bt.name} · ${count} ${bt.unit}`;
-  document.getElementById('wzr-bread-rows').innerHTML=bRows.map(r=>`
-    <div class="wzr-row">
-      <span class="wzr-row-icon">${r.icon}</span>
-      <span class="wzr-row-label">${r.label}</span>
-      <span class="wzr-row-unit">גר'</span>
-      <span class="wzr-row-val">${r.val}</span>
-    </div>`).join('');
-
-  // Flour breakdown
-  const flourHtml=bt.flours.map(f=>`
-    <div class="flour-bar-item">
+  // Bread panel
+  const multi=calcs.length>1;
+  if(multi){
+    document.getElementById('wzr-bread-title').textContent=`🍞 ${calcs.length} סוגי לחם`;
+    const totalF=calcs.reduce((a,c)=>a+c.F,0),totalW=calcs.reduce((a,c)=>a+c.W,0),totalSalt=calcs.reduce((a,c)=>a+c.SALT,0);
+    document.getElementById('wzr-bread-rows').innerHTML=[
+      makeRow('🌾','קמח כולל',Math.round(totalF)),
+      makeRow('🧫','מחמצת כולל',Math.round(totalStarter)),
+      makeRow('💧','מים כולל',Math.round(totalW)),
+      makeRow('🧂','מלח כולל',Math.round(totalSalt)),
+    ].join('');
+    document.getElementById('wzr-flour-section').innerHTML=calcs.map(({bt,count,F,S,W,SALT})=>`
+      <div class="wzr-section-title" style="margin-top:14px">${bt.emoji} ${bt.name} — ${count} ${bt.unit}</div>
+      <div class="wzr-card">${[
+        makeRow('🌾','קמח',Math.round(F)),makeRow('🧫','מחמצת',Math.round(S)),
+        makeRow('💧','מים',Math.round(W)),makeRow('🧂','מלח',Math.round(SALT)),
+        ...(bt.extras||[]).map(e=>makeRow(e.icon,e.name,Math.round(F*(e.pct/100))))
+      ].join('')}</div>`).join('');
+    document.getElementById('wzr-process-section').innerHTML='';
+  } else {
+    const {bt,count,F,S,W,SALT,sp,wp,saltp}=calcs[0];
+    document.getElementById('wzr-bread-title').textContent=`${bt.emoji} ${bt.name} · ${count} ${bt.unit}`;
+    document.getElementById('wzr-bread-rows').innerHTML=[
+      makeRow('🌾','קמח סה"כ',Math.round(F)),makeRow('🧫','מחמצת',Math.round(S)),
+      makeRow('💧','מים',Math.round(W)),makeRow('🧂','מלח',Math.round(SALT)),
+      ...(bt.extras||[]).map(e=>makeRow(e.icon,e.name,Math.round(F*(e.pct/100))))
+    ].join('');
+    const flourHtml=bt.flours.map(f=>`<div class="flour-bar-item">
       <div class="flour-bar-label"><span>${f.name}</span><em>${Math.round(F*(f.pct/100))}ג'</em></div>
       <div class="flour-bar-track"><div class="flour-bar-fill" style="width:${f.pct}%;background:${f.color}"></div></div>
     </div>`).join('');
-  document.getElementById('wzr-flour-section').innerHTML=
-    `<div class="wzr-section-title" style="margin-top:14px">${bt.flours.length>1?'🌾 פירוט קמחים':'🌾 קמח'}</div>
-     <div class="wzr-card" style="padding:16px 20px">${flourHtml}</div>`;
-
-  // Process steps
-  const processHtml=bt.process.map((s,i)=>`
-    <div class="process-step">
-      <div class="ps-num">${i+1}</div>
-      <div><div class="ps-title">${s.t}</div><div class="ps-desc">${s.d}</div></div>
-    </div>`).join('');
-  document.getElementById('wzr-process-section').innerHTML=
-    `<div class="wzr-section-title" style="margin-top:14px">📋 שלבי הכנה</div>
-     <div class="wzr-card" style="padding:4px 0">${processHtml}</div>`;
-
-  // Instructions
-  const instHtml=bt.inst.map((ph,pi)=>`
-    <div class="inst-phase">
-      <div class="inst-phase-header" onclick="wzrTogglePhase(${pi})" id="wzr-phase-hdr-${pi}">
-        <div class="inst-phase-icon" style="background:${ph.cl}22;">${ph.ph.split(' ')[0]}</div>
-        <span class="inst-phase-title">${ph.ph.substring(ph.ph.indexOf(' ')+1)}</span>
-        <span class="inst-phase-time">${ph.tm}</span>
-        <span class="inst-phase-chevron" id="wzr-phase-chev-${pi}">▼</span>
-      </div>
-      <div class="inst-steps-list" id="wzr-phase-steps-${pi}">
-        ${ph.st.map(s=>`<div class="inst-step-item">
-          <div class="inst-step-dot"></div>
-          <div><div class="inst-step-text">${s.t}</div>${s.tip?`<div class="inst-tip">💡 ${s.tip}</div>`:''}</div>
-        </div>`).join('')}
-      </div>
-    </div>`).join('');
-  document.getElementById('wzr-inst-section').innerHTML=
-    `<div style="margin-top:14px">
-      <div class="inst-header" onclick="wzrToggleInst()" style="border-radius:14px 14px 0 0;">
-        <h4 style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--wheat)">📖 הוראות הכנה מלאות</h4>
-        <span class="inst-toggle" id="wzr-inst-toggle">▼ פתח</span>
-      </div>
-      <div class="inst-body" id="wzr-inst-body">${instHtml}</div>
-    </div>`;
+    document.getElementById('wzr-flour-section').innerHTML=
+      `<div class="wzr-section-title" style="margin-top:14px">${bt.flours.length>1?'🌾 פירוט קמחים':'🌾 קמח'}</div>
+       <div class="wzr-card" style="padding:16px 20px">${flourHtml}</div>`;
+    const processHtml=bt.process.map((s,i)=>`<div class="process-step"><div class="ps-num">${i+1}</div>
+      <div><div class="ps-title">${s.t}</div><div class="ps-desc">${s.d}</div></div></div>`).join('');
+    document.getElementById('wzr-process-section').innerHTML=
+      `<div class="wzr-section-title" style="margin-top:14px">📋 שלבי הכנה</div>
+       <div class="wzr-card" style="padding:4px 0">${processHtml}</div>`;
+    const instHtml=bt.inst.map((ph,pi)=>`
+      <div class="inst-phase">
+        <div class="inst-phase-header" onclick="wzrTogglePhase(${pi})" id="wzr-phase-hdr-${pi}">
+          <div class="inst-phase-icon" style="background:${ph.cl}22;">${ph.ph.split(' ')[0]}</div>
+          <span class="inst-phase-title">${ph.ph.substring(ph.ph.indexOf(' ')+1)}</span>
+          <span class="inst-phase-time">${ph.tm}</span>
+          <span class="inst-phase-chevron" id="wzr-phase-chev-${pi}">▼</span>
+        </div>
+        <div class="inst-steps-list" id="wzr-phase-steps-${pi}">
+          ${ph.st.map(s=>`<div class="inst-step-item">
+            <div class="inst-step-dot"></div>
+            <div><div class="inst-step-text">${s.t}</div>${s.tip?`<div class="inst-tip">💡 ${s.tip}</div>`:''}</div>
+          </div>`).join('')}
+        </div>
+      </div>`).join('');
+    document.getElementById('wzr-inst-section').innerHTML=
+      `<div style="margin-top:14px">
+        <div class="inst-header" onclick="wzrToggleInst()" style="border-radius:14px 14px 0 0;">
+          <h4 style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--wheat)">📖 הוראות הכנה מלאות</h4>
+          <span class="inst-toggle" id="wzr-inst-toggle">▼ פתח</span>
+        </div>
+        <div class="inst-body" id="wzr-inst-body">${instHtml}</div>
+      </div>`;
+  }
 
   document.getElementById('wiz-results-overlay').style.display='flex'; document.body.style.overflow='hidden';
   document.getElementById('wiz-results-overlay').style.flexDirection='column';
@@ -1141,9 +1241,10 @@ function wzrSetTab(tab){
 }
 
 function wzrCopy(){
-  const bt=BT.find(b=>b.id===wizState.breadId);
-  if(!bt)return;
-  const text=wizBuildCopyText(bt,wizState.count,wizState.city,wizState.season,wizState.keep);
+  if(!wizState.breadIds.length)return;
+  let text=wizState.breadIds.length===1
+    ? wizBuildCopyText(BT.find(b=>b.id===wizState.breadIds[0]),wizState.breadCounts[wizState.breadIds[0]],wizState.city,wizState.season,wizState.keep)
+    : wizState.breadIds.map(id=>wizBuildCopyText(BT.find(b=>b.id===id),wizState.breadCounts[id],wizState.city,wizState.season,wizState.keep)).join('\n---\n');
   try{
     const ta=document.createElement('textarea');
     ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
@@ -1167,8 +1268,11 @@ function wzrGoFull(){
     // Now calculate and show
     showTab('starter');
     calcStarter();
-    selectBread(wizState.breadId);
-    document.getElementById('b-loaves').value=wizState.count;
+    selectedBreads={};
+    wizState.breadIds.forEach(id=>{selectedBreads[id]=wizState.breadCounts[id];});
+    document.querySelectorAll('.bread-type-btn').forEach(b=>b.classList.toggle('active',!!selectedBreads[b.dataset.id]));
+    updateBreadInfoBanner();
+    updateBreadCountsUI();
     calcBread();
     showTab('starter');
   },300);
@@ -1195,8 +1299,8 @@ function backToWizard(){
   wizState.step=0;
   initWizard();
   // Restore previous selections visually
-  if(wizState.breadId){
-    document.querySelectorAll('.wiz-bread-btn').forEach(b=>b.classList.toggle('active',b.dataset.id===wizState.breadId));
+  if(wizState.breadIds.length){
+    document.querySelectorAll('.wiz-bread-btn').forEach(b=>b.classList.toggle('active',wizState.breadIds.includes(b.dataset.id)));
     document.getElementById('wiz-next-0').classList.add('ready');
   }
   if(wizState.city){
@@ -1415,7 +1519,7 @@ async function botSend(){
     </div>
   </div>
   <div class="bot-input-row">
-    <input type="file" accept="image/*" id="bot-file-input" style="display:none;" onchange="botHandleImage(event)"/>
+    <input type="file" accept="image/*" capture="environment" id="bot-file-input" style="display:none;" onchange="botHandleImage(event)"/>
     <div class="tooltip-wrap" style="flex-shrink:0;">
       <button class="bot-cam-btn" onclick="document.getElementById('bot-file-input').click()">📷</button>
       <div class="tooltip-box" style="right:0;left:auto;width:170px;bottom:calc(100% + 8px);">צלם את המחמצת שלך ואני אבדוק אם היא מוכנה לאפייה 🔍</div>
