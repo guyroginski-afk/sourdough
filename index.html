@@ -290,6 +290,24 @@ footer{text-align:center;padding:20px;font-family:'IBM Plex Mono',monospace;font
 #wizard-overlay[style*="display:flex"] ~ * { pointer-events: none; }
 body:has(#wizard-overlay[style*="display:flex"]) { overflow: hidden !important; }
 body:has(#wiz-results-overlay[style*="display:flex"]) { overflow: hidden !important; }
+/* MISO CALCULATOR */
+.miso-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;padding-bottom:8px;}
+.miso-card{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:18px 16px;transition:box-shadow .15s;}
+.miso-card:hover{box-shadow:0 4px 16px rgba(123,74,29,.12);}
+.miso-card-header{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.miso-emoji{font-size:2rem;}
+.miso-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--crust);}
+.miso-months{font-size:.72rem;color:var(--text-muted);font-family:'IBM Plex Mono',monospace;margin-top:2px;}
+.miso-note{font-size:.72rem;color:var(--moss);background:var(--moss-light);border-radius:8px;padding:6px 10px;margin-bottom:10px;line-height:1.4;}
+.miso-rows{display:flex;flex-direction:column;gap:4px;}
+.miso-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);}
+.miso-row:last-child{border-bottom:none;}
+.miso-label{font-size:.76rem;color:var(--text-muted);font-weight:600;}
+.miso-val{font-family:'IBM Plex Mono',monospace;font-size:.92rem;font-weight:700;color:var(--dark);}
+.miso-unit{font-size:.62rem;color:var(--wheat);margin-right:2px;font-weight:400;}
+.miso-total .miso-label,.miso-total .miso-val{color:var(--crust);font-weight:800;}
+.miso-total{background:var(--wheat-light);border-radius:8px;padding:6px 8px !important;margin-top:4px;}
+.miso-pct .miso-val{color:var(--moss);}
 </style>
 <!-- Google Analytics GA4 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-M81P02KGEK"></script>
@@ -446,6 +464,7 @@ body:has(#wiz-results-overlay[style*="display:flex"]) { overflow: hidden !import
   <button onclick="backToWizard()" style="padding:10px 14px;font-family:'Heebo',sans-serif;font-size:0.8rem;font-weight:700;color:rgba(247,237,216,.5);background:none;border:1px solid rgba(247,237,216,.2);border-radius:8px;cursor:pointer;margin:auto 0 auto 0;transition:all .2s;white-space:nowrap;" onmouseover="this.style.color='#C8913A';this.style.borderColor='#C8913A'" onmouseout="this.style.color='rgba(247,237,216,.5)';this.style.borderColor='rgba(247,237,216,.2)'">← אשף</button>
   <button class="tab-btn active" onclick="showTab('starter')">🧫 מחמצת</button>
   <button class="tab-btn" onclick="showTab('bread')">🍞 מחשבון לחם</button>
+  <button class="tab-btn" onclick="showTab('miso')">🍵 מיסו</button>
 </nav>
 
 <div class="page active" id="tab-starter">
@@ -540,6 +559,29 @@ body:has(#wiz-results-overlay[style*="display:flex"]) { overflow: hidden !import
     <button class="calc-btn" onclick="calcBread()">🍞 חשב מתכון</button>
   </div>
   <div id="bread-results" class="hidden"></div>
+</div>
+
+<div class="page" id="tab-miso">
+  <div class="card">
+    <div class="card-title">🍵 מחשבון מיסו</div>
+    <div class="input-row" style="grid-template-columns:1fr 1fr;align-items:end;">
+      <div class="input-group">
+        <label>כמה קוג׳י יש לך?</label>
+        <span class="sub">ברירת מחדל: 800 גרם</span>
+        <div class="input-wrap">
+          <input type="number" id="miso-koji" value="800" min="100" step="50">
+          <span class="input-unit">גרם</span>
+        </div>
+      </div>
+      <button class="calc-btn" style="margin-top:0;" onclick="calcMiso()">🍵 חשב</button>
+    </div>
+  </div>
+  <div id="miso-results" class="hidden"></div>
+  <div class="card" style="font-size:.78rem;color:var(--text-muted);line-height:1.6;direction:rtl;">
+    <div style="font-size:.82rem;font-weight:700;color:var(--crust);margin-bottom:8px;">על המחשבון</div>
+    המחשבון נכתב ע"י גל מהבלוג <a href="https://www.ptitim.com/miso_guide/" target="_blank" style="color:var(--wheat);">פתיתים</a>, ככלי עזר למדריך המיסו.
+    הוא אינו מתכון בפני עצמו ולא מומלץ להסתמך עליו בלי לקרוא לעומק את המדריך המלא.
+  </div>
 </div>
 
 <footer>🍞 מחשבון לחם מחמצת</footer>
@@ -662,9 +704,10 @@ function updateCityTemps(){
 }
 
 function showTab(tab){
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&tab==='starter')||(i===1&&tab==='bread')));
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&tab==='starter')||(i===1&&tab==='bread')||(i===2&&tab==='miso')));
   document.getElementById('tab-starter').classList.toggle('active',tab==='starter');
   document.getElementById('tab-bread').classList.toggle('active',tab==='bread');
+  document.getElementById('tab-miso').classList.toggle('active',tab==='miso');
 }
 function setSeason(el){
   document.querySelectorAll('.season-btn').forEach(b=>b.classList.remove('active'));
@@ -1492,6 +1535,49 @@ async function botSend(){
   }
   botLoading=false;
   botUpdateSendBtn();
+}
+
+// ═══ MISO CALCULATOR ═══
+const MISO_TYPES=[
+  {name:'לבן מתוק מאד', emoji:'🤍', months:3,  legumeRatio:0.4,  saltPct:0.05, note:'בקרה תדירה'},
+  {name:'לבן מתוק',     emoji:'💛', months:4,  legumeRatio:0.65, saltPct:0.06, note:'בקרה תדירה'},
+  {name:'לבן',          emoji:'🌕', months:6,  legumeRatio:1.0,  saltPct:0.07, note:''},
+  {name:'לבן מאוזן',   emoji:'🌾', months:6,  legumeRatio:1.75, saltPct:0.07, note:'המירו 15% מהקטניה המבושלת לאורז לבן מבושל'},
+  {name:'אדום',         emoji:'🍂', months:12, legumeRatio:2.0,  saltPct:0.09, note:''},
+  {name:'אדום חזק',    emoji:'🔴', months:18, legumeRatio:2.4,  saltPct:0.12, note:''},
+  {name:'חום',          emoji:'🟫', months:24, legumeRatio:2.6,  saltPct:0.14, note:''},
+];
+
+function calcMiso(){
+  const koji=parseFloat(document.getElementById('miso-koji').value)||800;
+  const cards=MISO_TYPES.map(m=>{
+    const legCooked=Math.round(koji*m.legumeRatio);
+    const legDry=Math.round(legCooked*0.5);
+    const salt=Math.round((legCooked+koji)*m.saltPct);
+    const total=legCooked+koji+salt;
+    const kojiPct=Math.round(koji/legCooked*100);
+    return `<div class="miso-card">
+      <div class="miso-card-header">
+        <span class="miso-emoji">${m.emoji}</span>
+        <div>
+          <div class="miso-name">${m.name}</div>
+          <div class="miso-months">⏳ ${m.months} חודשים</div>
+        </div>
+      </div>
+      ${m.note?`<div class="miso-note">${m.note}</div>`:''}
+      <div class="miso-rows">
+        <div class="miso-row"><span class="miso-label">קוג׳י</span><span class="miso-val">${koji}<span class="miso-unit">גרם</span></span></div>
+        <div class="miso-row"><span class="miso-label">קטניות מבושלות</span><span class="miso-val">${legCooked}<span class="miso-unit">גרם</span></span></div>
+        <div class="miso-row"><span class="miso-label">קטניות לפני בישול</span><span class="miso-val">${legDry}<span class="miso-unit">גרם</span></span></div>
+        <div class="miso-row"><span class="miso-label">מלח (${Math.round(m.saltPct*100)}%)</span><span class="miso-val">${salt}<span class="miso-unit">גרם</span></span></div>
+        <div class="miso-row miso-total"><span class="miso-label">סה״כ מאסה</span><span class="miso-val">${total}<span class="miso-unit">גרם</span></span></div>
+        <div class="miso-row miso-pct"><span class="miso-label">יחס קוג׳י / קטניות</span><span class="miso-val">${kojiPct}<span class="miso-unit">%</span></span></div>
+      </div>
+    </div>`;
+  }).join('');
+  const el=document.getElementById('miso-results');
+  el.innerHTML=`<div class="miso-grid">${cards}</div>`;
+  el.classList.remove('hidden');
 }
 
 </script>
