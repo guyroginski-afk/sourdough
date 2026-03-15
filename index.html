@@ -292,8 +292,9 @@ body:has(#wizard-overlay[style*="display:flex"]) { overflow: hidden !important; 
 body:has(#wiz-results-overlay[style*="display:flex"]) { overflow: hidden !important; }
 /* MISO CALCULATOR */
 .miso-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;padding-bottom:8px;}
-.miso-card{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:18px 16px;transition:box-shadow .15s;}
-.miso-card:hover{box-shadow:0 4px 16px rgba(123,74,29,.12);}
+.miso-card{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:18px 16px;transition:all .18s;cursor:pointer;}
+.miso-card:hover{box-shadow:0 4px 16px rgba(123,74,29,.12);transform:translateY(-1px);}
+.miso-card.selected{border-color:var(--wheat);box-shadow:0 0 0 3px rgba(200,145,58,.18);}
 .miso-card-header{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
 .miso-emoji{font-size:2rem;}
 .miso-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--crust);}
@@ -308,6 +309,62 @@ body:has(#wiz-results-overlay[style*="display:flex"]) { overflow: hidden !import
 .miso-total .miso-label,.miso-total .miso-val{color:var(--crust);font-weight:800;}
 .miso-total{background:var(--wheat-light);border-radius:8px;padding:6px 8px !important;margin-top:4px;}
 .miso-pct .miso-val{color:var(--moss);}
+/* Miso recipe detail panel */
+.miso-detail{background:linear-gradient(135deg,var(--dark) 0%,#3D1F08 100%);border-radius:20px;padding:24px 20px;color:var(--cream);margin-bottom:14px;}
+.miso-detail-title{font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--wheat);margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+.miso-shopping-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px;}
+@media(max-width:440px){.miso-shopping-grid{grid-template-columns:1fr;}}
+.miso-shop-item{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px;text-align:center;}
+.miso-shop-item .sv{font-family:'IBM Plex Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--wheat);display:block;}
+.miso-shop-item .su{font-size:.6rem;color:rgba(247,237,216,.45);font-family:'IBM Plex Mono',monospace;}
+.miso-shop-item .sl{font-size:.7rem;color:rgba(247,237,216,.7);margin-top:4px;font-weight:600;}
+/* Process steps */
+.miso-process{margin-top:4px;}
+.miso-phase{margin-bottom:10px;border-radius:14px;overflow:hidden;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);}
+.miso-phase-hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;cursor:pointer;user-select:none;}
+.miso-phase-hdr:hover{background:rgba(255,255,255,.05);}
+.miso-phase-title{font-size:.88rem;font-weight:700;color:var(--cream);}
+.miso-phase-time{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--wheat);}
+.miso-phase-body{padding:0 16px 14px;display:none;}
+.miso-phase-body.open{display:block;}
+.miso-step{font-size:.8rem;color:rgba(247,237,216,.8);padding:5px 0;border-bottom:1px solid rgba(255,255,255,.06);line-height:1.5;}
+.miso-step:last-child{border-bottom:none;}
+.miso-step::before{content:'→ ';color:var(--wheat);font-weight:700;}
+/* Salt slider */
+.salt-slider-wrap{background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:22px;margin-bottom:14px;}
+.salt-slider-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--crust);margin-bottom:14px;}
+.salt-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.salt-pct-badge{font-family:'IBM Plex Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--wheat);}
+.salt-desc{font-size:.78rem;color:var(--text-muted);margin-top:6px;min-height:2em;line-height:1.5;}
+.salt-risk{display:inline-block;padding:2px 8px;border-radius:6px;font-size:.68rem;font-weight:700;margin-top:6px;}
+.salt-risk.safe{background:#d4edda;color:#2d6a4f;}
+.salt-risk.caution{background:#fff3cd;color:#856404;}
+.salt-risk.risky{background:#f8d7da;color:#842029;}
+/* Maintenance checklist */
+.miso-checklist{background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:22px;margin-bottom:14px;}
+.miso-checklist-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--crust);margin-bottom:14px;}
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.check-item:last-child{border-bottom:none;}
+.check-icon{font-size:1.3rem;flex-shrink:0;margin-top:1px;}
+.check-title{font-size:.84rem;font-weight:700;color:var(--dark);}
+.check-desc{font-size:.74rem;color:var(--text-muted);margin-top:2px;line-height:1.4;}
+.check-status{font-size:.7rem;padding:2px 8px;border-radius:6px;font-weight:700;margin-top:4px;display:inline-block;}
+.check-status.ok{background:#d4edda;color:#2d6a4f;}
+.check-status.warn{background:#fff3cd;color:#856404;}
+.check-status.bad{background:#f8d7da;color:#842029;}
+/* Troubleshooting */
+.miso-trouble{background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:22px;margin-bottom:14px;}
+.miso-trouble-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--crust);margin-bottom:14px;}
+.trouble-item{border:1.5px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden;}
+.trouble-item:last-child{margin-bottom:0;}
+.trouble-hdr{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;background:white;gap:8px;}
+.trouble-hdr:hover{background:var(--wheat-light);}
+.trouble-q{font-size:.84rem;font-weight:700;color:var(--dark);}
+.trouble-chevron{font-size:.8rem;color:var(--wheat);transition:transform .2s;flex-shrink:0;}
+.trouble-body{padding:0 14px;max-height:0;overflow:hidden;transition:max-height .25s ease,padding .25s;}
+.trouble-body.open{max-height:200px;padding:10px 14px 14px;}
+.trouble-cause{font-size:.76rem;color:var(--text-muted);margin-bottom:6px;}
+.trouble-fix{font-size:.78rem;color:var(--dark);font-weight:600;}
 </style>
 <!-- Google Analytics GA4 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-M81P02KGEK"></script>
@@ -562,6 +619,8 @@ body:has(#wiz-results-overlay[style*="display:flex"]) { overflow: hidden !import
 </div>
 
 <div class="page" id="tab-miso">
+
+  <!-- Calculator card -->
   <div class="card">
     <div class="card-title">🍵 מחשבון מיסו</div>
     <div class="input-row" style="grid-template-columns:1fr 1fr;align-items:end;">
@@ -575,13 +634,132 @@ body:has(#wiz-results-overlay[style*="display:flex"]) { overflow: hidden !import
       </div>
       <button class="calc-btn" style="margin-top:0;" onclick="calcMiso()">🍵 חשב</button>
     </div>
+    <div style="font-size:.74rem;color:var(--text-muted);margin-top:10px;">לחץ על כרטיס מיסו לקבלת מתכון מלא עם שלבי הכנה</div>
   </div>
+
+  <!-- Type cards grid -->
   <div id="miso-results" class="hidden"></div>
-  <div class="card" style="font-size:.78rem;color:var(--text-muted);line-height:1.6;direction:rtl;">
-    <div style="font-size:.82rem;font-weight:700;color:var(--crust);margin-bottom:8px;">על המחשבון</div>
-    המחשבון נכתב ע"י גל מהבלוג <a href="https://www.ptitim.com/miso_guide/" target="_blank" style="color:var(--wheat);">פתיתים</a>, ככלי עזר למדריך המיסו.
-    הוא אינו מתכון בפני עצמו ולא מומלץ להסתמך עליו בלי לקרוא לעומק את המדריך המלא.
+
+  <!-- Selected recipe detail -->
+  <div id="miso-detail-panel" class="hidden"></div>
+
+  <!-- Salt % guide -->
+  <div class="salt-slider-wrap">
+    <div class="salt-slider-title">🧂 מדריך אחוז מלח</div>
+    <div class="salt-row">
+      <span style="font-size:.78rem;font-weight:700;color:var(--crust);">בחר אחוז מלח</span>
+      <span class="salt-pct-badge" id="salt-pct-val">7%</span>
+    </div>
+    <input type="range" id="salt-slider" min="4" max="14" value="7" step="1" oninput="updateSaltGuide()">
+    <div class="salt-row" style="justify-content:space-between;">
+      <span style="font-size:.62rem;color:var(--text-muted);">4% — מתוק</span>
+      <span style="font-size:.62rem;color:var(--text-muted);">14% — עמוק</span>
+    </div>
+    <div class="salt-desc" id="salt-desc"></div>
+    <div id="salt-risk-badge"></div>
   </div>
+
+  <!-- Monthly maintenance checklist -->
+  <div class="miso-checklist">
+    <div class="miso-checklist-title">📅 בדיקה חודשית — מה לבדוק</div>
+    <div class="check-item">
+      <span class="check-icon">💧</span>
+      <div>
+        <div class="check-title">טמרי — נוזל שעלה למעלה</div>
+        <div class="check-desc">נוזל חום כהה שעולה מהמיסו — זה טוב! זה טמרי. אפשר לרסק אותו פנימה או לשמור בצד.</div>
+        <span class="check-status ok">✓ סימן חיובי</span>
+      </div>
+    </div>
+    <div class="check-item">
+      <span class="check-icon">🍄</span>
+      <div>
+        <div class="check-title">עובש על פני השטח</div>
+        <div class="check-desc">עובש לבן/אפור = נורמלי לחלוטין. הסר בעדינות וחזור למלוח את פני השטח. עובש ירוק/שחור — הסר ובדוק לעומק.</div>
+        <span class="check-status warn">⚠ בדוק צבע</span>
+      </div>
+    </div>
+    <div class="check-item">
+      <span class="check-icon">🏋️</span>
+      <div>
+        <div class="check-title">משקל לחיצה</div>
+        <div class="check-desc">ודא שהמשקולות עדיין לוחצות. מינימום 50% ממשקל המיסו. לחיצה לא מספיקה = כיסי אוויר = עובש עמוק.</div>
+        <span class="check-status ok">✓ שמור לחץ</span>
+      </div>
+    </div>
+    <div class="check-item">
+      <span class="check-icon">👃</span>
+      <div>
+        <div class="check-title">ריח</div>
+        <div class="check-desc">ריח אומאמי עמוק, מעט חמצמץ = מצוין. ריח אצטון / אלכוהול חריף = אוורר וערבב. ריח רקבון = בעיה.</div>
+        <span class="check-status warn">⚠ הרח בכל פתיחה</span>
+      </div>
+    </div>
+    <div class="check-item">
+      <span class="check-icon">🌡️</span>
+      <div>
+        <div class="check-title">טמפרטורה</div>
+        <div class="check-desc">טווח אידיאלי: 19–28°. קיץ ישראלי חם — עבור למיסו עם אחוז מלח גבוה יותר או הכנס למקרר אחרי 3 חודשים.</div>
+        <span class="check-status ok">19–28° אידיאלי</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Troubleshooting -->
+  <div class="miso-trouble">
+    <div class="miso-trouble-title">🔧 פתרון בעיות נפוצות</div>
+    <div class="trouble-item">
+      <div class="trouble-hdr" onclick="toggleTrouble(this)">
+        <span class="trouble-q">יש יותר מדי נוזל מעל המיסו</span>
+        <span class="trouble-chevron">▼</span>
+      </div>
+      <div class="trouble-body">
+        <div class="trouble-cause">סיבה: הבצק היה רטוב מדי, או הלחיצה חזקה מדי.</div>
+        <div class="trouble-fix">פתרון: נקז חלק מהנוזל, רענן את הניילון והמלח. שמור את הטמרי בצד לשימוש בבישול.</div>
+      </div>
+    </div>
+    <div class="trouble-item">
+      <div class="trouble-hdr" onclick="toggleTrouble(this)">
+        <span class="trouble-q">לא יצא טמרי בכלל</span>
+        <span class="trouble-chevron">▼</span>
+      </div>
+      <div class="trouble-body">
+        <div class="trouble-cause">סיבה: המיסו יבש מדי, או משקל לחיצה לא מספיק.</div>
+        <div class="trouble-fix">פתרון: הוסף משקולות, ודא שהלחיצה אחידה. לא חייב להיות טמרי — זה תלוי בסוג הקטנית.</div>
+      </div>
+    </div>
+    <div class="trouble-item">
+      <div class="trouble-hdr" onclick="toggleTrouble(this)">
+        <span class="trouble-q">ריח אצטון / אלכוהול חריף</span>
+        <span class="trouble-chevron">▼</span>
+      </div>
+      <div class="trouble-body">
+        <div class="trouble-cause">סיבה: אוורור לא מספיק, כלי קטן מדי, או חום גבוה מדי.</div>
+        <div class="trouble-fix">פתרון: ערבב מהתחתית למעלה (טנצ׳י-גאשי), ודא שהכלי מכוסה בבד בלבד ולא אטום.</div>
+      </div>
+    </div>
+    <div class="trouble-item">
+      <div class="trouble-hdr" onclick="toggleTrouble(this)">
+        <span class="trouble-q">עובש ירוק / שחור על פני השטח</span>
+        <span class="trouble-chevron">▼</span>
+      </div>
+      <div class="trouble-body">
+        <div class="trouble-cause">סיבה: חדירת אוויר, לחיצה לא מספיקה בשלב האריזה.</div>
+        <div class="trouble-fix">פתרון: הסר את שכבת העובש בשלמותה, מלח מחדש, הדק ניילון. אם העובש עמוק — זרוק.</div>
+      </div>
+    </div>
+    <div class="trouble-item">
+      <div class="trouble-hdr" onclick="toggleTrouble(this)">
+        <span class="trouble-q">המיסו מלוח מדי אחרי ההבשלה</span>
+        <span class="trouble-chevron">▼</span>
+      </div>
+      <div class="trouble-body">
+        <div class="trouble-cause">סיבה: אחוז מלח גבוה מדי, או זמן התססה ארוך מדי.</div>
+        <div class="trouble-fix">פתרון: ערבב עם מיסו חדש וצעיר, או השתמש בכמות קטנה יותר בבישול. המיסו עדיין טעים!</div>
+      </div>
+    </div>
+  </div>
+
+
 </div>
 
 <footer>🍞 מחשבון לחם מחמצת</footer>
@@ -1539,24 +1717,69 @@ async function botSend(){
 
 // ═══ MISO CALCULATOR ═══
 const MISO_TYPES=[
-  {name:'לבן מתוק מאד', emoji:'🤍', months:3,  legumeRatio:0.4,  saltPct:0.05, note:'בקרה תדירה'},
-  {name:'לבן מתוק',     emoji:'💛', months:4,  legumeRatio:0.65, saltPct:0.06, note:'בקרה תדירה'},
-  {name:'לבן',          emoji:'🌕', months:6,  legumeRatio:1.0,  saltPct:0.07, note:''},
-  {name:'לבן מאוזן',   emoji:'🌾', months:6,  legumeRatio:1.75, saltPct:0.07, note:'המירו 15% מהקטניה המבושלת לאורז לבן מבושל'},
-  {name:'אדום',         emoji:'🍂', months:12, legumeRatio:2.0,  saltPct:0.09, note:''},
-  {name:'אדום חזק',    emoji:'🔴', months:18, legumeRatio:2.4,  saltPct:0.12, note:''},
-  {name:'חום',          emoji:'🟫', months:24, legumeRatio:2.6,  saltPct:0.14, note:''},
+  {name:'לבן מתוק מאד', emoji:'🤍', months:3,  legumeRatio:0.4,  saltPct:0.05, note:'בקרה תדירה',
+   steps:[
+    {phase:'🫘 הכנת קטניות',time:'14–18 שעות',steps:['שרה 600 גרם פולי סויה 12–18 שעות','בשל עם מעט סודה לשתייה עד שניתן למעוך בקלות (2–3 שעות)','צנן ל-35° — חום גוף']},
+    {phase:'🍚 ערבוב',time:'20 דקות',steps:['פורר קוג׳י ביד בקערה גדולה','ערבב מלח עם הקוג׳י','שלב קטניות מקוררות + כוס מהנוזל שמור','טחן לעקביות פירורית — לא רכה מדי']},
+    {phase:'🫙 אריזה',time:'30 דקות',steps:['עקר את הצנצנת עם וודקה','אחד לשכבות — הדס היטב בכל שכבה','פזר מלח על פני השטח','כסה בניילון + טבעת מלח','הנח משקל של לפחות 50% ממשקל המיסו']},
+    {phase:'⏳ התססה',time:'3 חודשים',steps:['שמור ב-19–28°, מקום חשוך','בדוק אחת לחודש: עובש, טמרי, לחץ','אחרי 3 חודשים: טעם — צריך להיות מתוק-אומאמי']},
+   ]},
+  {name:'לבן מתוק',     emoji:'💛', months:4,  legumeRatio:0.65, saltPct:0.06, note:'בקרה תדירה',
+   steps:[
+    {phase:'🫘 הכנת קטניות',time:'14–18 שעות',steps:['שרה פולי סויה 12–18 שעות','בשל עד ריכוך מלא (2–3 שעות)','צנן ל-35°']},
+    {phase:'🍚 ערבוב',time:'20 דקות',steps:['פורר קוג׳י ביד','ערבב מלח עם קוג׳י','שלב קטניות + נוזל שמור','טחן לעקביות פירורית']},
+    {phase:'🫙 אריזה',time:'30 דקות',steps:['עקר צנצנת','אחד לשכבות, הדס היטב','מלח + ניילון + משקל (50%+ ממשקל המיסו)']},
+    {phase:'⏳ התססה',time:'4 חודשים',steps:['19–28°, מקום חשוך','בדיקה חודשית — עובש לבן נורמלי','טעם אחרי 4 חודשים']},
+   ]},
+  {name:'לבן',          emoji:'🌕', months:6,  legumeRatio:1.0,  saltPct:0.07, note:'',
+   steps:[
+    {phase:'🫘 הכנת קטניות',time:'14–18 שעות',steps:['שרה 12–18 שעות','בשל 2–4 שעות עד ריכוך','שמור כוס נוזל + 7% מלח, צנן']},
+    {phase:'🍚 ערבוב',time:'20 דקות',steps:['פורר קוג׳י','ערבב מלח + קוג׳י + קטניות','טחן לעקביות פירורית']},
+    {phase:'🫙 אריזה',time:'30 דקות',steps:['עקר עם אלכוהול','שכבות + הדסה + מלח + ניילון','משקל של 50%+ ממשקל המיסו']},
+    {phase:'⏳ התססה',time:'6 חודשים',steps:['19–28°, מקום חשוך','בדיקה חודשית','בשלות: טעם אומאמי מאוזן']},
+   ]},
+  {name:'לבן מאוזן',   emoji:'🌾', months:6,  legumeRatio:1.75, saltPct:0.07, note:'המירו 15% מהקטניה המבושלת לאורז לבן מבושל',
+   steps:[
+    {phase:'🫘 הכנת קטניות + אורז',time:'14–18 שעות',steps:['שרה קטניות 12–18 שעות','בשל עד ריכוך','בשל אורז לבן בנפרד — 15% ממשקל הקטניות המבושלות','צנן הכל ל-35°']},
+    {phase:'🍚 ערבוב',time:'20 דקות',steps:['פורר קוג׳י','ערבב קוג׳י + מלח + קטניות + אורז','טחן לעקביות פירורית']},
+    {phase:'🫙 אריזה',time:'30 דקות',steps:['עקר צנצנת','שכבות + הדסה + מלח + ניילון','משקל 50%+ ממשקל המיסו']},
+    {phase:'⏳ התססה',time:'6 חודשים',steps:['19–28°, חשוך','האורז מוסיף מתיקות ועומק','בדיקה חודשית']},
+   ]},
+  {name:'אדום',         emoji:'🍂', months:12, legumeRatio:2.0,  saltPct:0.09, note:'',
+   steps:[
+    {phase:'🫘 הכנת קטניות',time:'14–20 שעות',steps:['שרה 12–18 שעות','בשל 3–4 שעות — קטניות מרובות לוקחות יותר זמן','צנן ל-35°']},
+    {phase:'🍚 ערבוב',time:'20 דקות',steps:['פורר קוג׳י ביד','מלח + קוג׳י + קטניות','טחן — אפשר מרקם מעט גס יותר לאדום']},
+    {phase:'🫙 אריזה',time:'30 דקות',steps:['עקר צנצנת','שכבות + הדסה מאוד טובה','מלח + ניילון + משקל כבד (50%+)']},
+    {phase:'⏳ התססה',time:'12 חודשים',steps:['19–28°, מקום חשוך','בדיקה חודשית','סבלנות — הטעם העמוק מגיע רק אחרי שנה']},
+   ]},
+  {name:'אדום חזק',    emoji:'🔴', months:18, legumeRatio:2.4,  saltPct:0.12, note:'',
+   steps:[
+    {phase:'🫘 הכנת קטניות',time:'16–20 שעות',steps:['שרה קטניות 14–18 שעות','בשל ל-4 שעות עד ריכוך מלא','צנן ל-35°']},
+    {phase:'🍚 ערבוב',time:'20 דקות',steps:['פורר קוג׳י','מלח + קוג׳י + קטניות','טחן לעקביות גסה-בינונית']},
+    {phase:'🫙 אריזה',time:'30 דקות',steps:['עקר היטב','שכבות + הדסה + מלח עבה + ניילון','משקל כבד — 50%+ ממשקל המיסו']},
+    {phase:'⏳ התססה',time:'18 חודשים',steps:['19–26° (מלח גבוה = יציב יותר)','בדיקה כל חודש–חודשיים','ייצא עמוק, מלוח, אומאמי חזק']},
+   ]},
+  {name:'חום',          emoji:'🟫', months:24, legumeRatio:2.6,  saltPct:0.14, note:'',
+   steps:[
+    {phase:'🫘 הכנת קטניות',time:'16–20 שעות',steps:['שרה 14–18 שעות','בשל 4 שעות+','צנן ל-35°']},
+    {phase:'🍚 ערבוב',time:'20 דקות',steps:['פורר קוג׳י','מלח גבוה + קוג׳י + קטניות','טחן']},
+    {phase:'🫙 אריזה',time:'30 דקות',steps:['עקר היטב','שכבות + הדסה + מלח + ניילון','משקל 50%+']},
+    {phase:'⏳ התססה',time:'24 חודשים',steps:['19–26°, סבלנות מלאה','בדיקה כל 2 חודשים','המתן — שנתיים. התוצאה שווה!']},
+   ]},
 ];
+
+let misoSelectedIdx=null;
 
 function calcMiso(){
   const koji=parseFloat(document.getElementById('miso-koji').value)||800;
-  const cards=MISO_TYPES.map(m=>{
+  const cards=MISO_TYPES.map((m,i)=>{
     const legCooked=Math.round(koji*m.legumeRatio);
     const legDry=Math.round(legCooked*0.5);
     const salt=Math.round((legCooked+koji)*m.saltPct);
     const total=legCooked+koji+salt;
     const kojiPct=Math.round(koji/legCooked*100);
-    return `<div class="miso-card">
+    const isSelected=misoSelectedIdx===i;
+    return `<div class="miso-card${isSelected?' selected':''}" onclick="selectMisoType(${i})">
       <div class="miso-card-header">
         <span class="miso-emoji">${m.emoji}</span>
         <div>
@@ -1578,7 +1801,95 @@ function calcMiso(){
   const el=document.getElementById('miso-results');
   el.innerHTML=`<div class="miso-grid">${cards}</div>`;
   el.classList.remove('hidden');
+  if(misoSelectedIdx!==null) renderMisoDetail(misoSelectedIdx);
+  updateSaltGuide();
 }
+
+function selectMisoType(i){
+  const koji=parseFloat(document.getElementById('miso-koji').value)||800;
+  misoSelectedIdx=(misoSelectedIdx===i)?null:i;
+  // update selected state on cards
+  document.querySelectorAll('.miso-card').forEach((c,idx)=>c.classList.toggle('selected',idx===misoSelectedIdx));
+  if(misoSelectedIdx===null){
+    document.getElementById('miso-detail-panel').classList.add('hidden');
+    return;
+  }
+  renderMisoDetail(misoSelectedIdx);
+  setTimeout(()=>document.getElementById('miso-detail-panel').scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+
+function renderMisoDetail(i){
+  const koji=parseFloat(document.getElementById('miso-koji').value)||800;
+  const m=MISO_TYPES[i];
+  const legCooked=Math.round(koji*m.legumeRatio);
+  const legDry=Math.round(legCooked*0.5);
+  const salt=Math.round((legCooked+koji)*m.saltPct);
+  const total=legCooked+koji+salt;
+  const weight=Math.round(total*0.5);
+  const jarLiters=(total/1000*2).toFixed(1);
+  const shopping=[
+    {sv:koji,su:'גרם',sl:'קוג׳י'},
+    {sv:legDry,su:'גרם',sl:'קטניות יבשות'},
+    {sv:salt,su:'גרם',sl:`מלח (${Math.round(m.saltPct*100)}%)`},
+    {sv:total,su:'גרם',sl:'סה״כ מאסה'},
+    {sv:weight,su:'גרם',sl:'משקל לחיצה מינ׳'},
+    {sv:jarLiters,su:'ליטר+',sl:'צנצנת מינ׳'},
+  ];
+  const phases=m.steps.map((ph,pi)=>`
+    <div class="miso-phase">
+      <div class="miso-phase-hdr" onclick="toggleMisoPhase(this)">
+        <span class="miso-phase-title">${ph.phase}</span>
+        <span class="miso-phase-time">${ph.time} ▼</span>
+      </div>
+      <div class="miso-phase-body${pi===0?' open':''}">
+        ${ph.steps.map(s=>`<div class="miso-step">${s}</div>`).join('')}
+      </div>
+    </div>`).join('');
+  const el=document.getElementById('miso-detail-panel');
+  el.innerHTML=`<div class="miso-detail">
+    <div class="miso-detail-title">${m.emoji} ${m.name} — מתכון מלא</div>
+    <div class="miso-shopping-grid">${shopping.map(s=>`<div class="miso-shop-item"><span class="sv">${s.sv}</span><span class="su">${s.su}</span><div class="sl">${s.sl}</div></div>`).join('')}</div>
+    <div class="miso-process">${phases}</div>
+  </div>`;
+  el.classList.remove('hidden');
+}
+
+function toggleMisoPhase(hdr){
+  const body=hdr.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+function toggleTrouble(hdr){
+  const body=hdr.nextElementSibling;
+  body.classList.toggle('open');
+  hdr.querySelector('.trouble-chevron').style.transform=body.classList.contains('open')?'rotate(180deg)':'';
+}
+
+const SALT_DATA={
+  4:{desc:'מיסו מתוק מאד, זמן התססה קצר מאוד. מסוכן להכנה ביתית ללא ניטור קפדני.',risk:'risky',riskLabel:'⚠ מסוכן להכנה ביתית',months:'2–4'},
+  5:{desc:'מתוק, קצר. דורש בקרה תדירה. מתאים לניסיון מוקדם בפיקוח.',risk:'caution',riskLabel:'⚠ דורש בקרה תדירה',months:'3–4'},
+  6:{desc:'לבן מתוק. קל יחסית, זמן קצר. דורש מעקב חודשי.',risk:'caution',riskLabel:'⚠ מעקב חודשי',months:'3–6'},
+  7:{desc:'ברירת מחדל מומלצת למתחילים. מאוזן בין בטיחות לטעם.',risk:'safe',riskLabel:'✓ מומלץ למתחילים',months:'6+'},
+  8:{desc:'בטוח ויציב. מתאים לזמן התססה בינוני-ארוך.',risk:'safe',riskLabel:'✓ בטוח ויציב',months:'6–12'},
+  9:{desc:'מיסו אדום. עמוק ומורכב. בטוח לזמן ארוך.',risk:'safe',riskLabel:'✓ בטוח',months:'12+'},
+  10:{desc:'עמוק ומלוח. מתאים לחורף ישראלי ולאחסון ארוך.',risk:'safe',riskLabel:'✓ בטוח',months:'12–18'},
+  11:{desc:'מלוח חזק. זמן התססה ארוך, טעם מורכב מאוד.',risk:'safe',riskLabel:'✓ בטוח',months:'18+'},
+  12:{desc:'אדום חזק. לסבלניים בלבד — 18 חודשים+.',risk:'safe',riskLabel:'✓ בטוח לזמן ארוך',months:'18+'},
+  13:{desc:'מלוח מאוד. מתאים לתיבול בלבד, לא לאכילה ישירה.',risk:'safe',riskLabel:'✓ יציב מאוד',months:'24+'},
+  14:{desc:'מקסימום מלח מומלץ. מיסו חום עמוק. סבלנות של שנתיים.',risk:'safe',riskLabel:'✓ יציב מאוד',months:'24+'},
+};
+
+function updateSaltGuide(){
+  const v=parseInt(document.getElementById('salt-slider').value);
+  const d=SALT_DATA[v];
+  document.getElementById('salt-pct-val').textContent=v+'%';
+  document.getElementById('salt-desc').innerHTML=`זמן התססה מומלץ: <strong>${d.months} חודשים</strong> — ${d.desc}`;
+  const rb=document.getElementById('salt-risk-badge');
+  rb.innerHTML=`<span class="salt-risk ${d.risk}">${d.riskLabel}</span>`;
+}
+
+// Init salt guide on page load
+document.addEventListener('DOMContentLoaded',()=>{ updateSaltGuide(); calcMiso(); });
 
 </script>
 
