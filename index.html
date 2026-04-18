@@ -12,6 +12,7 @@
 body{background:var(--cream);font-family:'Heebo',sans-serif;color:var(--dark);min-height:100vh;background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23C8913A' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
 .tab-nav{position:sticky;top:0;z-index:100;background:var(--dark);display:flex;justify-content:center;padding:0 20px;box-shadow:0 4px 20px rgba(0,0,0,0.3);}
 .tab-btn{padding:18px 32px;font-family:'Heebo',sans-serif;font-size:0.95rem;font-weight:700;color:rgba(247,237,216,0.5);background:none;border:none;cursor:pointer;border-bottom:3px solid transparent;transition:all 0.2s;white-space:nowrap;}
+@media(max-width:380px){.tab-btn{padding:18px 16px;font-size:.82rem;}}
 .tab-btn:hover{color:var(--wheat);}
 .tab-btn.active{color:var(--wheat);border-bottom-color:var(--wheat);}
 .hero{background:linear-gradient(160deg,#1E0E04 0%,#3D1F08 50%,#251608 100%);padding:50px 20px 44px;text-align:center;position:relative;overflow:hidden;}
@@ -203,7 +204,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;heigh
 .bot-cam-btn:hover{background:linear-gradient(135deg,rgba(200,145,58,.4),rgba(200,145,58,.2));border-color:#C8913A;transform:scale(1.05);}
 .bot-cam-btn::after{content:'';position:absolute;inset:-3px;border-radius:13px;border:1.5px solid rgba(200,145,58,.4);animation:cam-pulse 2s ease-in-out infinite;}
 @keyframes cam-pulse{0%,100%{opacity:0;transform:scale(1);}50%{opacity:1;transform:scale(1.08);}}
-.bot-textarea{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(247,237,216,.1);border-radius:9px;padding:7px 11px;color:#F7EDD8;font-size:16px;font-family:'Heebo',sans-serif;resize:none;outline:none;direction:rtl;line-height:1.5;max-height:72px;overflow-y:auto;-webkit-text-size-adjust:100%;}
+.bot-textarea{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(247,237,216,.1);border-radius:9px;padding:7px 11px;color:#F7EDD8;font-size:16px;font-family:'Heebo',sans-serif;resize:none;outline:none;direction:rtl;line-height:1.5;max-height:120px;overflow-y:auto;-webkit-text-size-adjust:100%;}
 .bot-textarea::placeholder{color:rgba(247,237,216,.3);}
 .bot-send{width:34px;height:34px;border-radius:9px;border:none;font-size:.85rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;}
 .bot-send.ready{background:linear-gradient(135deg,#C8913A,#A05826);color:white;}
@@ -248,6 +249,7 @@ footer{text-align:center;padding:20px;font-family:'IBM Plex Mono',monospace;font
 /* Step 1 — bread grid */
 .wiz-bread-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
 @media(min-width:420px){.wiz-bread-grid{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:540px){.wiz-bread-grid{grid-template-columns:repeat(3,1fr);}}
 .wiz-bread-btn{border:2px solid rgba(247,237,216,.12);border-radius:16px;padding:16px 10px 14px;text-align:center;cursor:pointer;background:rgba(255,255,255,.04);transition:all .18s;position:relative;}
 .wiz-bread-btn:hover{border-color:rgba(200,145,58,.5);background:rgba(200,145,58,.08);}
 .wiz-bread-btn.active{border-color:var(--wheat);background:rgba(200,145,58,.15);box-shadow:0 0 0 1px var(--wheat);}
@@ -448,12 +450,12 @@ body:has(#wiz-results-overlay[style*="display:flex"]) { overflow: hidden !import
       <div class="wiz-q">כמה מחמצת לשמור?</div>
       <div class="wiz-sub">כמות שתישאר בצנצנת לאפייה הבאה</div>
       <div class="wiz-count-row">
-        <button class="wiz-count-btn" onclick="wizKeepChange(-10)">−</button>
+        <button class="wiz-count-btn" aria-label="הפחת כמות" onclick="wizKeepChange(-10)">−</button>
         <div>
           <div class="wiz-count-num" id="wiz-keep-num">50</div>
           <div class="wiz-count-unit">גר׳</div>
         </div>
-        <button class="wiz-count-btn" onclick="wizKeepChange(10)">+</button>
+        <button class="wiz-count-btn" aria-label="הגדל כמות" onclick="wizKeepChange(10)">+</button>
       </div>
       <div class="wiz-nav">
         <button class="wiz-back" onclick="wizNext(2)">חזור</button>
@@ -910,6 +912,7 @@ function calcStarter(){
   const lc=parseInt(document.getElementById('s-loafct').value)||2;
   const pct=parseFloat(document.getElementById('s-pct').value)/100||.18;
   const keep=parseFloat(document.getElementById('s-keep').value)||50;
+  if(isNaN(keep)||keep<0) return;
   const r=currentRatio,s=SEASON_DATA[currentSeason];
   const forBaking=(850/.82)*lc*pct,total=forBaking+keep;
   const old=total/(1+2*r),flour=old*r,water=old*r;
@@ -991,10 +994,10 @@ function updateBreadCountsUI(){
         ${bt.unitNote?`<div style="font-size:.63rem;color:var(--text-muted);line-height:1.3;margin-top:2px;">${bt.unitNote}</div>`:''}
       </div>
       <div class="bcr-stepper">
-        <button class="bcr-btn" onclick="setBreadCount('${id}',${count-1})">−</button>
+        <button class="bcr-btn" aria-label="הפחת כמות" onclick="setBreadCount('${id}',${count-1})">−</button>
         <span class="bcr-num">${count}</span>
         <span class="bcr-unit">${bt.unit}</span>
-        <button class="bcr-btn" onclick="setBreadCount('${id}',${count+1})">+</button>
+        <button class="bcr-btn" aria-label="הגדל כמות" onclick="setBreadCount('${id}',${count+1})">+</button>
       </div>
     </div>`;
   }).join('');
@@ -1546,7 +1549,9 @@ const BOT_SYSTEM = `אתה יועץ אפייה מומחה למחמצת. אתה �
 דבר עברית, חמה וידידותית, קצר וממוקד.`;
 
 let botOpen = false;
-let botHistory = [];
+let botHistoryStored = [];
+try { botHistoryStored = JSON.parse(localStorage.getItem('botHistory')||'[]'); } catch(e) {}
+let botHistory = botHistoryStored;
 let botImageB64 = null;
 let botImagePreview = null;
 let botLoading = false;
@@ -1561,7 +1566,12 @@ function botToggle(){
     fab.textContent='✕';
     // Prevent iOS zoom
     document.querySelector('meta[name=viewport]').content='width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no';
-    if(botHistory.length===0) botAddMessage('assistant','שלום! 👋 אני יועץ המחמצת שלך.\n\n📷 טיפ: לחץ על כפתור המצלמה ושלח תמונה של המחמצת שלך — אני אגיד לך אם היא מוכנה לאפייה, או אנתח תמונת לחם מוגמר ואתן פידבק.\n\nאפשר גם פשוט לשאול כל שאלה על אפייה!');
+    if(botHistory.length===0){
+      botAddMessage('assistant','שלום! 👋 אני יועץ המחמצת שלך.\n\n📷 טיפ: לחץ על כפתור המצלמה ושלח תמונה של המחמצת שלך — אני אגיד לך אם היא מוכנה לאפייה, או אנתח תמונת לחם מוגמר ואתן פידבק.\n\nאפשר גם פשוט לשאול כל שאלה על אפייה!');
+    } else if(document.getElementById('bot-messages').childElementCount===0) {
+      botHistory.forEach(m=>{if(m.role==='user'||m.role==='assistant'){const msgs=document.getElementById('bot-messages');const div=document.createElement('div');div.className=`bot-msg ${m.role==='user'?'user':'bot'}`;let inner='';if(m.role==='assistant')inner+=`<div class="bot-avatar" style="width:28px;height:28px;font-size:.85rem;flex-shrink:0;">🍞</div>`;inner+=`<div><div class="bot-bubble">${m.content||''}</div></div>`;div.innerHTML=inner;msgs.appendChild(div);}});
+      document.getElementById('bot-messages').scrollTop=document.getElementById('bot-messages').scrollHeight;
+    }
     setTimeout(()=>document.getElementById('bot-textarea').focus(),100);
   } else {
     win.style.display='none';
@@ -1587,6 +1597,7 @@ function botAddMessage(role, text, imgSrc){
   div.innerHTML = inner;
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
+  try{localStorage.setItem('botHistory',JSON.stringify(botHistory.slice(-30)));}catch(e){}
 }
 
 function botShowTyping(){
@@ -1637,6 +1648,7 @@ function botKeyDown(e){
   if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();botSend();}
 }
 
+const BOT_WORKER_URL = 'https://sourdough-bot.guyroginski.workers.dev';
 async function botSend(){
   if(botLoading) return;
   const ta = document.getElementById('bot-textarea');
@@ -1667,7 +1679,7 @@ async function botSend(){
     content.push({type:'text',text:text||(b64?'תנתח את התמונה הזו':'')});
     apiMsgs.push({role:'user',content});
 
-    const res = await fetch('https://sourdough-bot.guyroginski.workers.dev',{
+    const res = await fetch(BOT_WORKER_URL,{
       method:'POST',
       headers:{'Content-Type':'application/json'},  // API key מוסתר ב-Worker
       body:JSON.stringify({
@@ -1762,6 +1774,7 @@ function calcMiso(){
         </div>
       </div>
       ${m.note?`<div class="miso-note">${m.note}</div>`:''}
+      ${m.saltPct<0.07?`<div class="miso-note" style="background:rgba(255,160,0,.1);border-color:rgba(255,160,0,.3);color:#B87A00;">⚠️ מלח נמוך — בקרה שבועית חובה</div>`:''}
       <div class="miso-rows">
         <div class="miso-row"><span class="miso-label">קוג׳י</span><span class="miso-val">${koji}<span class="miso-unit">גרם</span></span></div>
         <div class="miso-row"><span class="miso-label">קטניות מבושלות</span><span class="miso-val">${legCooked}<span class="miso-unit">גרם</span></span></div>
@@ -1895,7 +1908,7 @@ document.addEventListener('DOMContentLoaded',()=>{ updateSaltGuide(); calcMiso()
       <button class="bot-cam-btn" onclick="document.getElementById('bot-file-input').click()">📷</button>
       <div class="tooltip-box" style="right:0;left:auto;width:170px;bottom:calc(100% + 8px);">צלם את המחמצת שלך ואני אבדוק אם היא מוכנה לאפייה 🔍</div>
     </div>
-    <textarea class="bot-textarea" id="bot-textarea" rows="1" placeholder="שאל אותי כל שאלה על אפייה..." onkeydown="botKeyDown(event)"></textarea>
+    <textarea class="bot-textarea" id="bot-textarea" rows="1" placeholder="שאל אותי כל שאלה על אפייה..." onkeydown="botKeyDown(event)" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';botUpdateSendBtn()"></textarea>
     <button class="bot-send idle" id="bot-send-btn" onclick="botSend()">↑</button>
   </div>
 </div>
