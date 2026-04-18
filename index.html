@@ -1697,7 +1697,7 @@ async function botSend(){
       method:'POST',
       headers:{'Content-Type':'application/json'},  // API key מוסתר ב-Worker
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
+        model:'claude-sonnet-4-5',
         max_tokens:1000,
         system:BOT_SYSTEM,
         messages:apiMsgs
@@ -1916,7 +1916,7 @@ document.addEventListener('DOMContentLoaded',()=>{ updateSaltGuide(); calcMiso()
     </div>
   </div>
   <div class="bot-input-row">
-    <input type="file" accept="image/*" capture="environment" id="bot-file-input" style="display:none;" onchange="botHandleImage(event)"/>
+    <input type="file" accept="image/*" id="bot-file-input" style="display:none;" onchange="botHandleImage(event)"/>
     <div class="tooltip-wrap" style="flex-shrink:0;">
       <button class="bot-cam-btn" onclick="document.getElementById('bot-file-input').click()">📷</button>
       <div class="tooltip-box" style="right:0;left:auto;width:170px;bottom:calc(100% + 8px);">צלם את המחמצת שלך ואני אבדוק אם היא מוכנה לאפייה 🔍</div>
