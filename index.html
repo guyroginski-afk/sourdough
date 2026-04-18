@@ -1110,15 +1110,13 @@ function copyMultiRecipe(){
     (bt.extras||[]).forEach(e=>text+=`${e.name}: ${Math.round(F*(e.pct/100))} גר'\n`);
     text+='\n';
   });
-  try{
-    const ta=document.createElement('textarea');
-    ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
-    document.body.appendChild(ta);ta.focus();ta.select();
-    document.execCommand('copy');document.body.removeChild(ta);
-    const btn=document.querySelector('[onclick="copyMultiRecipe()"]');
-    if(btn){btn.textContent='✅ הועתק!';btn.style.color='#8BC46A';btn.style.borderColor='#5A7138';btn.style.background='rgba(90,113,56,.15)';
-    setTimeout(()=>{btn.textContent='📋 העתק מתכון';btn.style.color='';btn.style.borderColor='';btn.style.background='';},2500);}
-  }catch(e){}
+  clipCopy(text,()=>document.querySelector('[onclick="copyMultiRecipe()"]'),'📋 העתק מתכון');
+}
+
+function clipCopy(text,getBtnFn,label){
+  const show=()=>{const b=getBtnFn();if(!b)return;b.textContent='✅ הועתק!';b.style.color='#8BC46A';b.style.borderColor='#5A7138';b.style.background='rgba(90,113,56,.15)';setTimeout(()=>{b.textContent=label;b.style.color='';b.style.borderColor='';b.style.background='';},2500);};
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(show).catch(()=>{});}
+  else{try{const ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();document.execCommand('copy');document.body.removeChild(ta);show();}catch(e){}}
 }
 
 // ═══ WIZARD ═══
@@ -1314,22 +1312,6 @@ function wizBuildCopyText(bt,count,cityId,season,keep){
   ].join('\n');
 }
 
-function wizCopyRecipe(){
-  const bt=BT.find(b=>b.id===wizState.breadId);
-  if(!bt)return;
-  const text=wizBuildCopyText(bt,wizState.count,wizState.city,wizState.season,wizState.keep);
-  try{
-    const ta=document.createElement('textarea');
-    ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
-    document.body.appendChild(ta);ta.focus();ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    const btn=document.getElementById('wiz-copy-btn');
-    btn.textContent='✅ הועתק!';
-    btn.style.color='#8BC46A';btn.style.borderColor='#5A7138';btn.style.background='rgba(90,113,56,.15)';
-    setTimeout(()=>{btn.textContent='📋 העתק מתכון';btn.style.color='';btn.style.borderColor='';btn.style.background='';},2500);
-  }catch(e){alert(text);}
-}
 
 function wizFinish(){
   if(!wizState.city||!wizState.breadIds.length)return;
@@ -1404,6 +1386,7 @@ function wzrShow(){
         ...(bt.extras||[]).map(e=>makeRow(e.icon,e.name,Math.round(F*(e.pct/100))))
       ].join('')}</div>`).join('');
     document.getElementById('wzr-process-section').innerHTML='';
+    document.getElementById('wzr-inst-section').innerHTML='';
   } else {
     const {bt,count,F,S,W,SALT,sp,wp,saltp}=calcs[0];
     document.getElementById('wzr-bread-title').textContent=`${bt.emoji} ${bt.name} · ${count} ${bt.unit}`;
@@ -1466,16 +1449,7 @@ function wzrCopy(){
   let text=wizState.breadIds.length===1
     ? wizBuildCopyText(BT.find(b=>b.id===wizState.breadIds[0]),wizState.breadCounts[wizState.breadIds[0]],wizState.city,wizState.season,wizState.keep)
     : wizState.breadIds.map(id=>wizBuildCopyText(BT.find(b=>b.id===id),wizState.breadCounts[id],wizState.city,wizState.season,wizState.keep)).join('\n---\n');
-  try{
-    const ta=document.createElement('textarea');
-    ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
-    document.body.appendChild(ta);ta.focus();ta.select();
-    document.execCommand('copy');document.body.removeChild(ta);
-    const btn=document.getElementById('wzr-copy-btn');
-    btn.textContent='✅ הועתק!';
-    btn.style.color='#8BC46A';btn.style.borderColor='#5A7138';btn.style.background='rgba(90,113,56,.15)';
-    setTimeout(()=>{btn.innerHTML='📋 העתק מתכון';btn.style.color='';btn.style.borderColor='';btn.style.background='';},2500);
-  }catch(e){}
+  clipCopy(text,()=>document.getElementById('wzr-copy-btn'),'📋 העתק מתכון');
 }
 
 function wzrGoFull(){
@@ -1771,7 +1745,7 @@ const MISO_TYPES=[
 let misoSelectedIdx=null;
 
 function calcMiso(){
-  const koji=parseFloat(document.getElementById('miso-koji').value)||800;
+  const koji=Math.max(100,Math.min(5000,parseFloat(document.getElementById('miso-koji').value)||800));
   const cards=MISO_TYPES.map((m,i)=>{
     const legCooked=Math.round(koji*m.legumeRatio);
     const legDry=Math.round(legCooked*0.5);
@@ -1819,7 +1793,7 @@ function selectMisoType(i){
 }
 
 function renderMisoDetail(i){
-  const koji=parseFloat(document.getElementById('miso-koji').value)||800;
+  const koji=Math.max(100,Math.min(5000,parseFloat(document.getElementById('miso-koji').value)||800));
   const m=MISO_TYPES[i];
   const legCooked=Math.round(koji*m.legumeRatio);
   const legDry=Math.round(legCooked*0.5);
